@@ -1656,4 +1656,4 @@ That's all I can tell you about the format of Windows 3.x/95 help files.
 If you found out more, please let me know.
 
 M. Winterhoff
-100326.2776@compuserve.com
+mawin@gmx.net
