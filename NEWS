@@ -1,0 +1,83 @@
+Version 2.1:
+* macros may contain rtf meta characters
+* Win95 topic names may contain (nearly) all characters
+* 0x8000 in SWin->Maximize allowed
+* ForeHelp creates PhrIndex/PhrImage _and_ _empty_ Phrases file
+* HCRTF complained about > footnotes before # footnotes
+* macro parsing changed again
+
+Version 2.0:
+* Guess context ids from titles and keywords based on idea of Bent Lynggaard
+* Recompiled 16 bit EXE without register calling convention. BC++ 3.1 bug.
+* Doesn't print last (stray) topic of HC30 help files
+* Can list entry points into this help file (option /l)
+
+Version 1.9: faster & better than ever...
+* changed TopicPos, TopicOffset, Keyword maintenance
+* changed unhash to 40 bit integer arithmetic
+* fixed keyword footnotes [Bent Lynggaard]
+* no [ALIAS] in MVP files
+* no hidden text in option /r RTF files
+* some changes in font and stylesheet handling
+* corrects rounding error of HC31 on negative values
+* handles non-underlined topic jumps
+
+Version 1.8: used some spare days to clean up the to-do list...
+* better tracking of TopicOffset during decompilation
+* lists and checks references to external files, shows referencing topics
+* can add annotations from .ANN file to decompiled .RTF file
+* fixed bug in handling of pictures containing JumpId-macro hotspots
+* changed parsing of macros (3rd attempt to guess what Microsoft did)
+* fixed bug in popup/jump to external file / secondary window
+* fixed bug in > footnote / |VIOLA internal file handling
+* fixed bug in keyword assignment
+* now removes LZ77 compression from exported SHGs/MRBs
+* recreates Win 95 (HCW 4.00) [MACROS] section from internal |Rose file
+* 32 bit version available
+* handles LANGUAGE, [CHARTAB] and [GROUP] section of media view files
+
+Version 1.7
+* removed unneccessary output statement
+
+Version 1.6 can now check references to external help files plus:
+* duplicate macro names preceeding picture hotspot info skipped
+* does not write Win95 commands to multi-media help project files
+* changed unhash to circumvent Microsoft-C++ float rounding error
+* handles keywords defined inside topic text
+
+Version 1.5
+* fixed static on buffer of TopicName function (affected HC30 files)
+
+Version 1.4 fixes some bugs reported by different users:
+* buffer overflow in expanding LZ77&RunLen (byPacked 3) images fixed
+* embedded images {bmxwd} larger than 32k supported
+* extract topic names from jump into external file if no file specified
+* handles more phrases on HCRTF generated (Win95) help files
+* Windows 3.1 (HC31) |Phrases always Zeck compressed
+* LinkData2 buffer enlarged 1 byte to store trailing NUL character
+
+Version 1.3
+* parses examples of {bmc} etc. statements contained in help text correctly
+* can now generate a *.CNT content file for Windows 95 / WinHlp32
+* Microsoft C: ctype macros (isalnum/isprint) don't work with signed char
+
+Version 1.2 fixes some severe bugs introduced in version 1.1 and:
+* tells you which help compiler to use
+* collects multiple keyword footnotes into single lines
+* handles \r\n in COPYRIGHT
+* converts SPC-macro (but only in [CONFIG] section)
+* does not generate duplicate MAP-statements if possible
+* {button} and {mci,mci_left,mci_right} commands supported
+* [BITMAP]-section in HCRTF help files irritated transparent bitmaps
+
+Version 1.1 now supports more features of Win95/HCRTF 4.00/WinHlp32:
+* Supports LCID, CHARSET, AUTO-SIZE HEIGHT, CNT, INDEX_SEPARATORS
+* Additional Win95 Macros (to extract original topic names)
+* [CONFIG:n] of Win95 supported (internal file |CFn)
+* Secondary windows with > footnote supported (internal file |VIOLA)
+* Transparent bitmaps supported (bmct,bmlt,bmrt)
+* Expanded internal limits as HCRTF allows larger items
+* Now does RunLen compressed device dependend bitmaps
+* Bugs in handling of metafiles removed
+* Bug in placement of pack(1) removed
+* Parsing of macros changed (is it really better now ?)
