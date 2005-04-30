@@ -1,3 +1,5 @@
+helpdeco -- utility program to dissect Windows help files
+
 Version 2.1:
 * macros may contain rtf meta characters
 * Win95 topic names may contain (nearly) all characters
