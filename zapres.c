@@ -10,9 +10,6 @@ option: Normally ZAPRES will create a .BAK file before it attempts to modify
 This program removes the resolution information from Windows .BMP bitmaps, .MRB
 multi resolution bitmaps, and .SHG segmented hotspot graphics. This way WinHelp
 will not rescale the image and MRBC can be applied to specify a new resolution.
-
-This program is freeware. Use at your own risk. No part of it may be used
-commercially. No fees may be charged on distributing.
 */
 
 #include <stdio.h>
@@ -95,9 +92,7 @@ int main(int argc,char *argv[])
 	       "This program removes the resolution information from Windows .BMP bitmaps, .MRB\n"
 	       "multi resolution bitmaps, and .SHG segmented hotspot graphics. This way WinHelp\n"
 	       "will not rescale the image and MRBC can be applied to specify a new resolution.\n"
-	       "\n"
-	       "This program is freeware. Use at your own risk. No part of it may be used\n"
-	       "commercially. No fees may be charged on distributing.\n");
+	       "\n");
     }
     else for(i=1;i<b;i++)
     {

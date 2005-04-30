@@ -218,13 +218,6 @@ The newest public version of HELPDECO is always available at:
 CompuServe: Dr. Dobbs Journal DDJFOR Undocumented Corner HELPDCxx.ZIP
 InterNet: ftp://gmutant.wrlc.org/pub/winhelp
 
-HELPDECO ist Freeware. Der Einsatz erfolgt auf eigene Gefahr. Kein
-Programmteil darf kommerziell verwendet werden. FÅr das Kopieren dÅrfen
-keine GebÅhren verlangt werden (Sharewarehandel Finger weg).
-HELPDECO is freeware. Use at your own risk. No part of the program may be
-used commercially. No fees may be charged on distributing the program
-(shareware distributors keep off).
-
 Die Verwendung von Inhalten zerlegter Hilfedateien kann eine Verletzung
 des Urheberrechtes bedeuten.
 The use of parts of decompiled help files may constitute a violation of
@@ -6093,8 +6086,7 @@ int _cdecl main(int argc,char *argv[])
 		       "helpfile in two passes and deposit them in the current directory. You may then\n"
 		       "rebuild the helpfile using the appropriate help compiler HC30, HC31, HCP, HCW,\n"
 		       "HCRTF, MVC, WMVC or MVCC. The file will not be identical, but should look and\n"
-		       "work like the original. This program is Freeware. Use at your own risk. No\n"
-		       "part of it may be used commercially. No fees may be charged on distributing.\n"
+		       "work like the original.\n"
 #ifndef _WIN32
 		       "Launch from Windows 95/Windows NT command line to handle larger helpfiles."
 #endif

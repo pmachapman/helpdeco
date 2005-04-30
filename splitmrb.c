@@ -8,9 +8,6 @@ usage: SPLITMRB filename[.mrb] ...
 Output files are created in the current directory using resolution-dependent
 extensions *.EGA,*.VGA,*.CGA,*.854,*.MAC or *.BMP,*.WMF or *.Snn,*.nnn (where
 n is a digit from 0 to 9). Discarded hotspot info will be written to stdout.
-
-This program is freeware. Use at your own risk. No part of it may be used
-commercially. No fees may be charged on distributing.
 */
 #include <stdio.h>
 #include <string.h>
@@ -297,9 +294,7 @@ int main(int argc,char *argv[])
 		       "Output files are created in the current directory using resolution-dependent\n"
 		       "extensions *.EGA,*.VGA,*.CGA,*.854,*.MAC or *.BMP,*.WMF or *.Snn,*.nnn (where\n"
 		       "n is a digit from 0 to 9). Discarded hotspot info will be written to stdout.\n"
-		       "\n"
-		       "This program is freeware. Use at your own risk. No part of it may be used\n"
-		       "commercially. No fees may be charged on distributing.\n");
+		       "\n");
     }
     else for(i=1;i<argc;i++)
     {
