@@ -27,6 +27,6 @@ zapres: zapres.o compat.o
 clean:
 	rm -f *.o helpdeco zapres splitmrb
 
-install:
+install: build
 	install helpdeco zapres splitmrb $(prefix)/bin
 	install README README.de NEWS helpfile.txt $(prefix)/share/doc
