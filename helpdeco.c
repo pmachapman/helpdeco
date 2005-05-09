@@ -1,6 +1,7 @@
 /*
 helpdeco -- utility program to dissect Windows help files
 Copyright (C) 2005 Manfred Winterhoff
+Copyright (C) 2005 Ben Collver
 
 This file is part of helpdeco; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -87,7 +88,7 @@ char index_separators[40]=",;";
 char *extension;
 int extensions=0;
 /* index into bmpext: bit 0=multiresolution bit 1=bitmap, bit 2=metafile, bit 3=hotspot data, bit 4=embedded, bit 5=transparent */
-char *bmpext[]={"???","MRB","BMP","MRB","WMF","MRB","MRB","MRB","SHG","MRB","SHG","MRB","SHG","MRB","SHG","MRB"};
+char *bmpext[]={"???","mrb","bmp","mrb","wmf","mrb","mrb","mrb","shg","mrb","shg","mrb","shg","mrb","shg","mrb"};
 char **stopwordfilename;
 int stopwordfiles;
 char **fontname;
@@ -177,7 +178,7 @@ char *unhash(unsigned long hash) /* deliver 3.1 context id that fits hash value 
 	    result=0UL;
 	    for(mask=0x80000000UL;mask;mask>>=1)
 	    {
-		if(hashhi>divhi||hashhi==divhi&&hashlo>=divlo)
+		if(hashhi>divhi||(hashhi==divhi&&hashlo>=divlo))
 		{
 		    result|=mask;
 		    hashhi-=divhi;
@@ -612,8 +613,8 @@ int filenamecmp(const char *a,const char *b)
 
     _splitpath(a,NULL,NULL,aname,aext);
     _splitpath(b,NULL,NULL,bname,bext);
-    if(aext[0]=='\0') strcpy(aext,".HLP");
-    if(bext[0]=='\0') strcpy(bext,".HLP");
+    if(aext[0]=='\0') strcpy(aext,".hlp");
+    if(bext[0]=='\0') strcpy(bext,".hlp");
     i=strcmpi(aname,bname);
     if(i) return i;
     return strcmpi(aext,bext);
@@ -1050,7 +1051,7 @@ int ExtractBitmap(char *szFilename,MFILE *f)
 	f->seek(f,FileStart+dwOffsBitmap);
 	byType=f->get(f); /* type of picture: 5=DDB, 6=DIB, 8=METAFILE */
 	byPacked=f->get(f); /* packing method: 0=unpacked, 1=RunLen, 2=LZ77, 3=both */
-	if(byType==6&&byPacked<4||byType==5&&byPacked<2)
+	if((byType==6&&byPacked<4)||(byType==5&&byPacked<2))
 	{
 	    type|=2; /* contains bitmap */
 	    memset(&bmfh,0,sizeof(bmfh));
@@ -1074,10 +1075,10 @@ int ExtractBitmap(char *szFilename,MFILE *f)
 	    dwHotspotSize=GetCDWord(f);
 	    dwPictureOffset=GetDWord(f);
 	    dwHotspotOffset=GetDWord(f);
-	    if(exportplain||n==1&&(dwHotspotOffset==0L||dwHotspotSize==0L))
+	    if((exportplain||n==1)&&(dwHotspotOffset==0L||dwHotspotSize==0L))
 	    {
 		if(checkexternal) break;
-		strcat(szFilename,".BMP");
+		strcat(szFilename,".bmp");
 		fTarget=my_fopen(szFilename,"wb");
 		if(fTarget)
 		{
@@ -1154,14 +1155,14 @@ int ExtractBitmap(char *szFilename,MFILE *f)
 	    dwHotspotSize=GetCDWord(f);
 	    dwPictureOffset=GetDWord(f);
 	    dwHotspotOffset=GetDWord(f);
-	    if(exportplain||n==1&&(dwHotspotOffset==0L||dwHotspotSize==0L))
+	    if((exportplain||n==1)&&(dwHotspotOffset==0L||dwHotspotSize==0L))
 	    {
 		if(checkexternal) break;
 		afh.dwKey=0x9AC6CDD7L;
 		afh.wInch=2540;
 		wp=(unsigned short *)&afh;
 		for(i=0;i<10;i++) afh.wChecksum^=*wp++;
-		strcat(szFilename,".WMF");
+		strcat(szFilename,".wmf");
 		fTarget=my_fopen(szFilename,"wb");
 		if(fTarget)
 		{
@@ -1293,7 +1294,7 @@ int ExtractBitmap(char *szFilename,MFILE *f)
 		    case 0xEB: /* topic jump into external file / secondary window */
 		    case 0xEE: /* popup jump into external file without font change */
 		    case 0xEF: /* topic jump into external file / secondary window without font change */
-			if(hotspot[n].id1!=0&&hotspot[n].id1!=1&&hotspot[n].id1!=4&&hotspot[n].id1!=6||hotspot[n].id2!=0)
+			if((hotspot[n].id1!=0&&hotspot[n].id1!=1&&hotspot[n].id1!=4&&hotspot[n].id1!=6)||(hotspot[n].id2!=0))
 			{
 			}
 			else
@@ -1335,8 +1336,8 @@ int ExtractBitmap(char *szFilename,MFILE *f)
     return type;
 }
 /****************************************************************************
-// END OF GRAPHICS STUFF
-//**************************************************************************/
+END OF GRAPHICS STUFF
+**************************************************************************/
 
 char *getbitmapname(unsigned int n) /* retrieve extension of exported bitmap n */
 {
@@ -1722,7 +1723,7 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 		}
 		putc('\n',hpj);
 	    }
-	    if(groups||multi&&browsenums>1)
+	    if((groups||multi)&&(browsenums>1))
 	    {
 		group=my_malloc(groups*sizeof(GROUP));
 		fputs("[GROUPS]\n",hpj);
@@ -2024,6 +2025,7 @@ unsigned char AddColor(unsigned char r,unsigned char g,unsigned char b)
 void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
 {
     static char *BestFonts[]={"Arial","Times New Roman","MS Sans Serif","MS Serif","Helv","TmsRmn","MS Sans Serif","Helvetica","Times Roman","Times"};
+    int default_font = 0;
     CHARMAPHEADER CharmapHeader;
     FONTHEADER FontHdr;
     FILE *f;
@@ -2059,6 +2061,9 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
 	    fseek(HelpFile,FontStart+FontHdr.FacenamesOffset+len*i,SEEK_SET);
 	    my_fread(FontName,len,HelpFile);
 	    FontName[len]='\0';
+	    if (FontName[0] == '\000') {
+		strcpy(FontName, BestFonts[default_font]);
+	    }
 	    ptr=strchr(FontName,',');
 	    if(ptr&&FontHdr.FacenamesOffset>=16)
 	    {
@@ -2290,14 +2295,14 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
 		    if(m->font.expndtw!=n->font.expndtw) fprintf(rtf,"\\expndtw%d",m->font.expndtw);
 		    if(m->font.FGRGB[0]!=n->font.FGRGB[0]) fprintf(rtf,"\\cf%d",m->font.FGRGB[0]);
 		    if(m->font.BGRGB[0]!=n->font.BGRGB[0]) fprintf(rtf,"\\cb%d",m->font.BGRGB[0]);
-		    if(m->font.Height!=n->font.Height) fprintf(rtf,"\\fs%d",-2L*m->font.Height);
+		    if(m->font.Height!=n->font.Height) fprintf(rtf,"\\fs%ld",-2L*m->font.Height);
 		    if((m->font.Weight>500)!=(n->font.Weight>500)) fprintf(rtf,"\\b%d",m->font.Weight>500);
 		    if(m->font.Italic!=n->font.Italic) fprintf(rtf,"\\i%d",m->font.Italic);
 		    if(m->font.Underline!=n->font.Underline) fprintf(rtf,"\\ul%d",m->font.Underline);
 		    if(m->font.StrikeOut!=n->font.StrikeOut) fprintf(rtf,"\\strike%d",m->font.StrikeOut);
 		    if(m->font.DoubleUnderline!=n->font.DoubleUnderline) fprintf(rtf,"\\uldb%d",m->font.DoubleUnderline);
 		    if(m->font.SmallCaps!=n->font.SmallCaps) fprintf(rtf,"\\scaps%d",m->font.SmallCaps);
-		    if(m->font.up!=n->font.up) if(m->font.up>0) fprintf(rtf,"\\up%d",m->font.up); else fprintf(rtf,"\\dn%d",-m->font.up);
+		    if(m->font.up!=n->font.up) fprintf(rtf,"\\up%d",abs(m->font.up));
 		    fprintf(rtf," \\sbasedon%u",m->BasedOn+9);
 		}
 		else
@@ -2312,7 +2317,7 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
 		    if(m->font.expndtw) fprintf(rtf,"\\expndtw%d",m->font.expndtw);
 		    if(m->font.up>0) fprintf(rtf,"\\up%d",m->font.up);
 		    else if(m->font.up<0) fprintf(rtf,"\\dn%d",-m->font.up);
-		    fprintf(rtf,"\\fs%d",-2*m->font.Height);
+		    fprintf(rtf,"\\fs%ld",-2*m->font.Height);
 		    if(m->font.FGRGB[0]) fprintf(rtf,"\\cf%d",m->font.FGRGB[0]);
 		    if(m->font.BGRGB[0]) fprintf(rtf,"\\cb%d",m->font.BGRGB[0]);
 		}
@@ -2334,7 +2339,7 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
 		    if(m->font.FontName!=n->font.FontName) fprintf(rtf,"\\f%d",m->font.FontName);
 		    if(m->font.FGRGB[0]!=n->font.FGRGB[0]) fprintf(rtf,"\\cf%d",m->font.FGRGB[0]);
 		    if(m->font.BGRGB[0]!=n->font.BGRGB[0]) fprintf(rtf,"\\cb%d",m->font.BGRGB[0]);
-		    if(m->font.Height!=n->font.Height) fprintf(rtf,"\\fs%d",-2L*m->font.Height);
+		    if(m->font.Height!=n->font.Height) fprintf(rtf,"\\fs%ld",-2L*m->font.Height);
 		    if((m->font.Weight>500)!=(n->font.Weight>500)) fprintf(rtf,"\\b%d",m->font.Weight>500);
 		    if(m->font.Italic!=n->font.Italic) fprintf(rtf,"\\i%d",m->font.Italic);
 		    if(m->font.Underline!=n->font.Underline) fprintf(rtf,"\\ul%d",m->font.Underline);
@@ -2352,7 +2357,7 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
 		    if(m->font.StrikeOut) fputs("\\strike",rtf);
 		    if(m->font.DoubleUnderline) fputs("\\uldb",rtf);
 		    if(m->font.SmallCaps) fputs("\\scaps",rtf);
-		    fprintf(rtf,"\\fs%d",-2*m->font.Height);
+		    fprintf(rtf,"\\fs%ld",-2*m->font.Height);
 		    if(m->font.FGRGB[0]) fprintf(rtf,"\\cf%d",m->font.FGRGB[0]);
 		    if(m->font.BGRGB[0]) fprintf(rtf,"\\cb%d",m->font.BGRGB[0]);
 		}
@@ -2504,10 +2509,12 @@ long TopicPhraseRead(FILE *HelpFile,long TopicPos,char *dest,long NumBytes,long 
 {
     char *buffer;
     long BytesRead;
+    long i;
 
     if(Length<=NumBytes) /* no phrase compression in this case */
     {
 	BytesRead=TopicRead(HelpFile,TopicPos,dest,Length);
+	for (i = BytesRead; i <= Length; i++) dest[i] = '\0';
 	if(BytesRead==Length&&Length<NumBytes) /* some trailing bytes are not used (bug in HCRTF ?) */
 	{
 	    buffer=my_malloc(NumBytes-Length);
@@ -3029,14 +3036,14 @@ void BuildName(char *buffer,int i)
     strcpy(buffer,name);
     if(i)
     {
-	itoa(i,num,10);
+	snprintf(num, 7, "%d", i);
 	if(strlen(buffer)+strlen(num)>8)
 	{
 	    buffer[8-strlen(num)]='\0';
 	}
 	strcat(buffer,num);
     }
-    strcat(buffer,".RTF");
+    strcat(buffer,".rtf");
 }
 
 /* emit rtf commands to change to font i.
@@ -3058,17 +3065,17 @@ void ChangeFont(FILE *rtf,unsigned int i,BOOL ul,BOOL uldb)
 	else
 	{
 	    /* HC30 can't reset, so reset using \plain */
-	    if(CurrentFont.Bold&&!f->Bold
-	    || CurrentFont.Italic&&!f->Italic
-	    || CurrentFont.Underline&&!(!uldb&&(ul||f->Underline))
-	    || CurrentFont.StrikeOut&&!f->StrikeOut
-	    || CurrentFont.DoubleUnderline&&!(uldb||f->DoubleUnderline)
-	    || CurrentFont.SmallCaps&&!f->SmallCaps
-	    || CurrentFont.FontName&&!f->FontName
-	    || CurrentFont.textcolor&&!f->textcolor
-	    || CurrentFont.backcolor&&!f->backcolor
-	    || CurrentFont.up&&!f->up
-	    || CurrentFont.style&&!f->style)
+	    if((CurrentFont.Bold&&!f->Bold)
+	    || (CurrentFont.Italic&&!f->Italic)
+	    || (CurrentFont.Underline&&!(!uldb&&(ul||f->Underline)))
+	    || (CurrentFont.StrikeOut&&!f->StrikeOut)
+	    || (CurrentFont.DoubleUnderline&&!(uldb||f->DoubleUnderline))
+	    || (CurrentFont.SmallCaps&&!f->SmallCaps)
+	    || (CurrentFont.FontName&&!f->FontName)
+	    || (CurrentFont.textcolor&&!f->textcolor)
+	    || (CurrentFont.backcolor&&!f->backcolor)
+	    || (CurrentFont.up&&!f->up)
+	    || (CurrentFont.style&&!f->style))
 	    {
 		fputs("\\plain",rtf);
 		memset(&CurrentFont,0,sizeof(CurrentFont));
@@ -3112,7 +3119,7 @@ void ListGroups(FILE *rtf,long TopicNum,unsigned long BrowseNum)
     grouplisted=FALSE;
     for(i=0;i<groups;i++) if(group[i].GroupHeader.GroupType==1||group[i].GroupHeader.GroupType==2)
     {
-	if(TopicNum>=group[i].GroupHeader.FirstTopic&&TopicNum<=group[i].GroupHeader.LastTopic&&(group[i].GroupHeader.GroupType==1||group[i].GroupHeader.GroupType==2&&(group[i].Bitmap[TopicNum>>3]&(1<<(TopicNum&7)))))
+	if((TopicNum>=group[i].GroupHeader.FirstTopic&&TopicNum<=group[i].GroupHeader.LastTopic)&&((group[i].GroupHeader.GroupType==1||group[i].GroupHeader.GroupType==2)&&(group[i].Bitmap[TopicNum>>3]&(1<<(TopicNum&7)))))
 	{
 	    if(!grouplisted)
 	    {
@@ -3248,9 +3255,9 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 			fprintf(rtf,"{\\up #}{\\footnote\\pard\\plain{\\up #} TOPIC%ld}\n",TopicNum);
 			if(resolvebrowse)
 			{
-			    if(TopicHdr30->NextTopicNum>TopicNum&&TopicHdr30->PrevTopicNum>TopicNum
-			    || TopicHdr30->NextTopicNum==-1&&TopicHdr30->PrevTopicNum>TopicNum
-			    || TopicHdr30->NextTopicNum>TopicNum&&TopicHdr30->PrevTopicNum==-1)
+			    if((TopicHdr30->NextTopicNum>TopicNum&&TopicHdr30->PrevTopicNum>TopicNum)
+			    || (TopicHdr30->NextTopicNum==-1&&TopicHdr30->PrevTopicNum>TopicNum)
+			    || (TopicHdr30->NextTopicNum>TopicNum&&TopicHdr30->PrevTopicNum==-1))
 			    {
 				BrowseNum=AddLink(TopicNum,TopicHdr30->NextTopicNum,TopicHdr30->PrevTopicNum);
 			    }
@@ -3283,9 +3290,9 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 			}
 			if(resolvebrowse)
 			{
-			    if(TopicHdr->BrowseFor>TopicOffset&&TopicHdr->BrowseBck>TopicOffset
-			    || TopicHdr->BrowseFor==-1L&&TopicHdr->BrowseBck>TopicOffset
-			    || TopicHdr->BrowseFor>TopicOffset&&TopicHdr->BrowseBck==-1L)
+			    if((TopicHdr->BrowseFor>TopicOffset&&TopicHdr->BrowseBck>TopicOffset)
+			    || (TopicHdr->BrowseFor==-1L&&TopicHdr->BrowseBck>TopicOffset)
+			    || (TopicHdr->BrowseFor>TopicOffset&&TopicHdr->BrowseBck==-1L))
 			    {
 				BrowseNum=AddLink(TopicOffset,TopicHdr->BrowseFor,TopicHdr->BrowseBck);
 			    }
@@ -3339,7 +3346,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 		}
 		TopicNum++;
 	    }
-	    else if(LinkData1&&LinkData2&&TopicLink.RecordType==TL_DISPLAY30||TopicLink.RecordType==TL_DISPLAY||TopicLink.RecordType==TL_TABLE)
+	    else if(LinkData1&&LinkData2&&(TopicLink.RecordType==TL_DISPLAY30||TopicLink.RecordType==TL_DISPLAY||TopicLink.RecordType==TL_TABLE))
 	    {
 		if(AnnoFile) Annotate(TopicPos,rtf);
 		ptr=LinkData1;
@@ -3442,7 +3449,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 				    break;
 				}
 			    }
-			    fprintf(rtf,"\\tx%d",(x1&0x3FFF)*scaling-rounderr);
+			    fprintf(rtf,"\\tx%ld",(x1&0x3FFF)*scaling-rounderr);
 			}
 		    }
 		    putc(' ',rtf);
@@ -3804,7 +3811,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
     return rtf;
 }
 
-int _cdecl ContextRecCmp(const void *a,const void *b)
+int ContextRecCmp(const void *a,const void *b)
 {
     if(((const CONTEXTREC *)a)->TopicOffset<((const CONTEXTREC *)b)->TopicOffset) return -1;
     if(((const CONTEXTREC *)a)->TopicOffset>((const CONTEXTREC *)b)->TopicOffset) return 1;
@@ -4858,9 +4865,9 @@ void FirstPass(FILE *HelpFile)
 		TopicHdr30=(TOPICHEADER30 *)LinkData1;
 		if(resolvebrowse)
 		{
-		    if(TopicHdr30->NextTopicNum>TopicNum&&TopicHdr30->PrevTopicNum>TopicNum
-		    || TopicHdr30->NextTopicNum==-1&&TopicHdr30->PrevTopicNum>TopicNum
-		    || TopicHdr30->NextTopicNum>TopicNum&&TopicHdr30->PrevTopicNum==-1)
+		    if((TopicHdr30->NextTopicNum>TopicNum&&TopicHdr30->PrevTopicNum>TopicNum)
+		    || (TopicHdr30->NextTopicNum==-1&&TopicHdr30->PrevTopicNum>TopicNum)
+		    || (TopicHdr30->NextTopicNum>TopicNum&&TopicHdr30->PrevTopicNum==-1))
 		    {
 			AddBrowse(TopicNum,TopicHdr30->NextTopicNum,TopicHdr30->PrevTopicNum);
 		    }
@@ -4891,9 +4898,9 @@ void FirstPass(FILE *HelpFile)
 		TopicHdr=(TOPICHEADER *)LinkData1;
 		if(resolvebrowse)
 		{
-		    if(TopicHdr->BrowseFor>TopicOffset&&TopicHdr->BrowseBck>TopicOffset
-		    || TopicHdr->BrowseFor==-1L&&TopicHdr->BrowseBck>TopicOffset
-		    || TopicHdr->BrowseFor>TopicOffset&&TopicHdr->BrowseBck==-1L)
+		    if((TopicHdr->BrowseFor>TopicOffset&&TopicHdr->BrowseBck>TopicOffset)
+		    || (TopicHdr->BrowseFor==-1L&&TopicHdr->BrowseBck>TopicOffset)
+		    || (TopicHdr->BrowseFor>TopicOffset&&TopicHdr->BrowseBck==-1L))
 		    {
 			AddBrowse(TopicOffset,TopicHdr->BrowseFor,TopicHdr->BrowseBck);
 		    }
@@ -5098,7 +5105,7 @@ void FirstPass(FILE *HelpFile)
     }
 }
 
-int _cdecl CTXOMAPRecCmp(const void *a,const void *b)
+int CTXOMAPRecCmp(const void *a,const void *b)
 {
     if(((CTXOMAPREC *)a)->TopicOffset<((CTXOMAPREC *)b)->TopicOffset) return -1;
     if(((CTXOMAPREC *)a)->TopicOffset>((CTXOMAPREC *)b)->TopicOffset) return 1;
@@ -5281,22 +5288,22 @@ BOOL HelpDeCompile(FILE *HelpFile,char *dumpfile,int mode,char *exportname,long 
 	    strcpy(hpjfilename,name);
 	    if(mvp)
 	    {
-		strcat(hpjfilename,".MVP");
+		strcat(hpjfilename,".mvp");
 	    }
 	    else
 	    {
-		strcat(hpjfilename,".HPJ");
+		strcat(hpjfilename,".hpj");
 	    }
 	    hpj=my_fopen(hpjfilename,"wt");
 	    if(hpj)
 	    {
 		strcpy(filename,name);
-		strcat(filename,".ICO");
+		strcat(filename,".ico");
 		SysList(HelpFile,hpj,filename); /* after ContextLoad */
 		ListBaggage(HelpFile,hpj,before31);
 		if(!mvp) AliasList(hpj); /* after ContextLoad, before TopicDump */
 		strcpy(filename,name);
-		strcat(filename,".PH");
+		strcat(filename,".ph");
 		PhraseList(filename); /* after PhraseLoad */
 		BuildName(filename,TopicsPerRTF>0);
 		rtf=my_fopen(filename,"wt");
@@ -5376,7 +5383,7 @@ BOOL HelpDeCompile(FILE *HelpFile,char *dumpfile,int mode,char *exportname,long 
 	    putc('\n',stderr);
 	    if(!before31&&guessing) GuessFromKeywords(HelpFile); /* after FirstPass, before SysList */
 	    strcpy(filename,name);
-	    strcat(filename,".CNT");
+	    strcat(filename,".cnt");
 	    rtf=my_fopen(filename,"wt");
 	    if(rtf)
 	    {
@@ -5456,7 +5463,7 @@ BOOL HelpDeCompile(FILE *HelpFile,char *dumpfile,int mode,char *exportname,long 
 	    PhraseLoad(HelpFile);
 	    DumpTopic(HelpFile,offset);
 	}
-	else if(strcmp(dumpfile+strlen(dumpfile)-4,".GRP")==0)
+	else if(strcmp(dumpfile+strlen(dumpfile)-4,".grp")==0)
 	{
 	    GroupDump(HelpFile);
 	}
@@ -5586,7 +5593,7 @@ BOOL HelpDeCompile(FILE *HelpFile,char *dumpfile,int mode,char *exportname,long 
     return TRUE;
 }
 
-int _cdecl main(int argc,char *argv[])
+int main(int argc,char *argv[])
 {
     char AnnoFileName[81];
     char drive[_MAX_DRIVE];
@@ -5740,9 +5747,8 @@ int _cdecl main(int argc,char *argv[])
     }
     if(filename)
     {
-	strupr(filename);
 	_splitpath(filename,drive,dir,name,ext);
-	if(ext[0]=='\0') strcpy(ext,".HLP");
+	if(ext[0]=='\0') strcpy(ext,".hlp");
 	mvp=ext[1]=='M';
 	_makepath(HelpFileName,drive,dir,name,ext);
 	f=fopen(HelpFileName,"rb");
@@ -5750,7 +5756,7 @@ int _cdecl main(int argc,char *argv[])
 	{
 	    if(annotate)
 	    {
-		if(AnnoFileName[0]=='\0') _makepath(AnnoFileName,drive,dir,name,".ANN");
+		if(AnnoFileName[0]=='\0') _makepath(AnnoFileName,drive,dir,name,".ann");
 		AnnoFile=fopen(AnnoFileName,"rb");
 		if(!AnnoFile)
 		{
@@ -5799,7 +5805,6 @@ int _cdecl main(int argc,char *argv[])
 		       "HCRTF, MVC, WMVC or MVCC. The file will not be identical, but should look and\n"
 		       "work like the original.\n"
 #ifndef _WIN32
-		       "Launch from Windows 95/Windows NT command line to handle larger helpfiles."
 #endif
 		       ,sizeof(int)*8);
     }

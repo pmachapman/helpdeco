@@ -1,6 +1,7 @@
 /*
 helpdeco -- utility program to dissect Windows help files
 Copyright (C) 2005 Manfred Winterhoff
+Copyright (C) 2005 Ben Collver
 
 This file is part of helpdeco; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -29,6 +30,7 @@ Output files are created in the current directory using resolution-dependent
 extensions *.EGA,*.VGA,*.CGA,*.854,*.MAC or *.BMP,*.WMF or *.Snn,*.nnn (where
 n is a digit from 0 to 9). Discarded hotspot info will be written to stdout.
 */
+#include <sys/types.h>
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
@@ -233,14 +235,10 @@ void PrintHotspotInfo(FILE *f)
     int i,l,n;
     typedef struct
     {
-	unsigned char c1,c2,c3;
-	unsigned int x,y,w,h;
-	unsigned long hash;
-    }
-    HOTSPOT;
-#if sizeof(HOTSPOT)!=15
-#error Compile byte aligned !
-#endif
+	u_int8_t c1,c2,c3;
+	u_int16_t x,y,w,h;
+	u_int32_t hash;
+    } HOTSPOT __attribute__((packed));
     HOTSPOT *hotspot;
     char name[80];
     char buffer[128];
@@ -323,7 +321,7 @@ int main(int argc,char *argv[])
 	while(l>0&&filename[l-1]!='\\'&&filename[l-1]!='/'&&filename[l-1]!=':') l--;
 	m=l;
 	while(filename[l]!='\0'&&filename[l]!='.') l++;
-	if(filename[l]=='\0') strcpy(filename+l,".MRB");
+	if(filename[l]=='\0') strcpy(filename+l,".mrb");
 	f=fopen(filename,"rb");
 	if(!f)
 	{
@@ -346,7 +344,7 @@ int main(int argc,char *argv[])
 		    fseek(f,offset,SEEK_SET);
 		    byType=getc(f); // type of picture: 5=DDB, 6=DIB, 8=METAFILE
 		    byPacked=getc(f); // packing method: 0=unpacked, 1=RunLen, 2=LZ77
-		    if(byType==6||byType==5&&byPacked<2)
+		    if(byType==6||(byType==5&&byPacked<2))
 		    {
 			memset(&bmfh,0,sizeof(bmfh));
 			memset(&bmih,0,sizeof(bmih));
@@ -393,17 +391,17 @@ int main(int argc,char *argv[])
 			    sprintf(filename+l,".%03d",j);
 			    if(w==96&&h==48&&!res[0])
 			    {
-				strcpy(filename+l,".CGA");
+				strcpy(filename+l,".cga");
 				res[0]=TRUE;
 			    }
 			    else if(w==96&&h==72&&!res[1])
 			    {
-				strcpy(filename+l,".EGA");
+				strcpy(filename+l,".ega");
 				res[1]=TRUE;
 			    }
 			    else if(w==96&&h==96&&!res[2])
 			    {
-				strcpy(filename+l,".VGA");
+				strcpy(filename+l,".vga");
 				res[2]=TRUE;
 			    }
 			    else if(w==120&&h==120&&!res[3])
@@ -413,12 +411,12 @@ int main(int argc,char *argv[])
 			    }
 			    else if(w==72&&h==72&&!res[4])
 			    {
-				strcpy(filename+l,".MAC");
+				strcpy(filename+l,".mac");
 				res[4]=TRUE;
 			    }
 			    else if(!res[6])
 			    {
-				strcpy(filename+l,".BMP");
+				strcpy(filename+l,".bmp");
 				res[6]=TRUE;
 			    }
 			    fTarget=fopen(filename+m,"wb");
@@ -487,7 +485,6 @@ int main(int argc,char *argv[])
 		    }
 		    else if(byType==8) // Windows MetaFile
 		    {
-			APMFILEHEADER afh;
 			unsigned short *wp;
 
 			memset(&afh,0,sizeof(afh));
@@ -527,7 +524,7 @@ int main(int argc,char *argv[])
 			    for(k=0;k<10;k++) afh.wChecksum^=*wp++;
 			    if(!res[5])
 			    {
-				strcpy(filename+l,".WMF");
+				strcpy(filename+l,".wmf");
 				res[5]=TRUE;
 			    }
 			    else

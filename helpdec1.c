@@ -19,16 +19,7 @@ http://www.gnu.org
 */
 
 /* HELPDEC1.C - HELPDECO supporting functions */
-
-#include <stdlib.h>
-#include <stdio.h>
-#include <stdarg.h>
-#include <string.h>
-#include <conio.h>
-#include <ctype.h>
 #include "helpdeco.h"
-
-extern BOOL overwrite; /* ugly: declared in HELPDECO.C */
 
 void error(char *format,...)
 {

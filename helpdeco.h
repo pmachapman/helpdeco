@@ -1,6 +1,7 @@
 /*
 helpdeco -- utility program to dissect Windows help files
 Copyright (C) 2005 Manfred Winterhoff
+Copyright (C) 2005 Ben Collver
 
 This file is part of helpdeco; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -27,8 +28,8 @@ http://www.gnu.org
 #include <stdarg.h>
 #include <stdlib.h>
 #include <string.h>
-#include <conio.h>
 #include <ctype.h>
+#include "compat.h"
 
 #ifdef __TURBOC__
 typedef struct { char a,b,c; } align;
@@ -608,7 +609,6 @@ typedef struct mfile          /* a class would be more appropriate */
 MFILE;
 
 extern void error(char *format,...);
-extern size_t strlcpy(char *dest,char *src,size_t len); /* limited string copy */
 extern void *my_malloc(long bytes); /* save malloc function */
 extern void *my_realloc(void *ptr,long bytes); /* save realloc function */
 extern char *my_strdup(char *ptr); /* save strdup function */
@@ -671,4 +671,5 @@ extern void CTXOMAPDump(FILE *HelpFile);
 extern void LinkDump(FILE *HelpFile);
 extern void AnnotationDump(FILE *HelpFile,long FileLength,char *name);
 
+extern BOOL overwrite; /* ugly: declared in HELPDECO.C */
 #endif

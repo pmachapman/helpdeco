@@ -1,6 +1,7 @@
 /*
 helpdeco -- utility program to dissect Windows help files
 Copyright (C) 2005 Manfred Winterhoff
+Copyright (C) 2005 Ben Collver
 
 This file is part of helpdeco; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -34,8 +35,10 @@ will not rescale the image and MRBC can be applied to specify a new resolution.
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <dir.h>
+#include <sys/types.h>
+#include <sys/dir.h>
 #include <string.h>
+#include "compat.h"
 
 int backup(FILE *f,char *oldname)
 {
@@ -48,7 +51,7 @@ int backup(FILE *f,char *oldname)
     int result=0;
 
     _splitpath(oldname,drive,dir,fname,ext);
-    _makepath(path,drive,dir,fname,".BAK");
+    _makepath(path,drive,dir,fname,".bak");
     bak=fopen(path,"wb");
     if(bak)
     {
@@ -117,7 +120,7 @@ int main(int argc,char *argv[])
     else for(i=1;i<b;i++)
     {
 	_splitpath(argv[i],drive,dir,fname,ext);
-	if(!ext[0]) strcpy(ext,".BMP");
+	if(!ext[0]) strcpy(ext,".bmp");
 	_makepath(path,drive,dir,fname,ext);
 	f=fopen(path,"r+b");
 	if(f)
