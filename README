@@ -158,8 +158,7 @@ See HELPFILE.TXT for a description of the Windows help file format
 as parsed by HELPDECO and related file formats like MRB/SHG.
 
 The newest public version of HELPDECO is always available at:
-CompuServe: Dr. Dobbs Journal DDJFOR Undocumented Corner HELPDCxx.ZIP
-InterNet: ftp://gmutant.wrlc.org/pub/winhelp
+http://sourceforge.net/projects/helpdeco/
 
 The use of parts of decompiled help files may constitute a violation of
 copyright law.
