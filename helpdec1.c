@@ -33,6 +33,9 @@ void error(char *format,...)
     if(getch()!='\r') exit(1);
 }
 
+#ifndef HAVE_STRNCPY
+#ifndef HAVE_STRLCPY
+
 size_t strlcpy(char *dest,char *src,size_t len) /* limited string copy */
 {
     size_t i;
@@ -42,6 +45,9 @@ size_t strlcpy(char *dest,char *src,size_t len) /* limited string copy */
     dest[i]='\0';
     return i;
 }
+
+#endif /* !defined(HAVE_STRLCPY) */
+#endif /* !defined(HAVE_STRNCPY) */
 
 void *my_malloc(long bytes) /* save malloc function */
 {

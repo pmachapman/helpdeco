@@ -609,6 +609,11 @@ typedef struct mfile          /* a class would be more appropriate */
 MFILE;
 
 extern void error(char *format,...);
+#ifdef HAVE_STRNCPY
+#define strlcpy strncpy
+#elif !defined(HAVE_STRLCPY)
+extern size_t strlcpy(char *dest,char *src,size_t len); /* limited string copy */
+#endif /* !defined(HAVE_STRLCPY) */
 extern void *my_malloc(long bytes); /* save malloc function */
 extern void *my_realloc(void *ptr,long bytes); /* save realloc function */
 extern char *my_strdup(char *ptr); /* save strdup function */
