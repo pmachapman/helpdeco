@@ -17,6 +17,13 @@
 # http://www.gnu.org
 
 prefix = /usr/local
+distdir = helpdeco-2.1
+files = \
+	compat.c compat.h \
+	helpdec1.c helpdeco.c helpdeco.h \
+	splitmrb.c zapres.c \
+	Makefile \
+	helpfile.txt NEWS README README.de
 
 build: helpdeco splitmrb zapres
 
@@ -28,5 +35,20 @@ clean:
 	rm -f *.o helpdeco zapres splitmrb
 
 install: build
+	-mkdir $(prefix) $(prefix)/bin $(prefix)/share $(prefix)/share/doc $(prefix)/share/doc/helpdeco
 	install helpdeco zapres splitmrb $(prefix)/bin
-	install README README.de NEWS helpfile.txt $(prefix)/share/doc
+	install README README.de NEWS helpfile.txt $(prefix)/share/doc/helpdeco
+
+dist:
+	-rm -rf $(distdir)
+	mkdir $(distdir)
+	for file in $(files); do \
+	  if test -d $$file; then \
+	    cp -p --recursive $$file $(distdir)/$$file; \
+	  else \
+	    test -f $(distdir)/$$file \
+	    || cp -p $$file $(distdir)/$$file; \
+	  fi; \
+	done
+	tar --gzip --create --file $(distdir).tar.gz $(distdir)
+	-rm -rf $(distdir)
