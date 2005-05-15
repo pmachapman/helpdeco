@@ -1,6 +1,6 @@
 /*
 helpdeco -- utility program to dissect Windows help files
-Copyright (C) 2005 Manfred Winterhoff
+Copyright (C) 1997 Manfred Winterhoff
 Copyright (C) 2005 Ben Collver
 
 This file is part of helpdeco; you can redistribute it and/or modify
