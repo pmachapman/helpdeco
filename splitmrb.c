@@ -21,7 +21,7 @@ http://www.gnu.org
 
 /*
 SPLITMRB - splits MRB into SHG/BMP/WMF and SHG into BMP/WMF files - Version 1.5
-M.Winterhoff, Geschw.-Scholl-Ring 17, 38444 Wolfsburg, Germany, CIS 100326,2776
+M.Winterhoff <mawin@gmx.net>, Geschw.-Scholl-Ring 17, 38444 Wolfsburg, Germany
 
 usage: SPLITMRB filename[.mrb] ...
        SPLITMRB filename.shg ...
@@ -304,7 +304,7 @@ int main(int argc,char *argv[])
     if(argc<2)
     {
 	fprintf(stderr,"SPLITMRB - splits MRB into SHG/BMP/WMF and SHG into BMP/WMF files - Version 1.5\n"
-		       "M.Winterhoff, Geschw.-Scholl-Ring 17, 38444 Wolfsburg, Germany, CIS 100326,2776\n"
+		       "M.Winterhoff <mawin@gmx.net>, Geschw.-Scholl-Ring 17, 38444 Wolfsburg, Germany\n"
 		       "\n"
 		       "usage: SPLITMRB filename[.mrb] ...\n"
 		       "       SPLITMRB filename.shg ...\n"

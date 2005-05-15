@@ -21,7 +21,7 @@ http://www.gnu.org
 
 /*
 ZAPRES - removes resolution information from Windows bitmap files - Version 1.1
-M.Winterhoff, Geschw.-Scholl-Ring 17, 38444 Wolfsburg, Germany, CIS 100326,2776
+M.Winterhoff <mawin@gmx.net>, Geschw.-Scholl-Ring 17, 38444 Wolfsburg, Germany
 
 usage:	ZAPRES filename1[.BMP] filename2[.BMP] ...
 
@@ -105,7 +105,7 @@ int main(int argc,char *argv[])
     if(b<2)
     {
 	printf("ZAPRES - removes resolution information from Windows bitmap files - Version 1.1\n"
-	       "M.Winterhoff, Geschw.-Scholl-Ring 17, 38444 Wolfsburg, Germany, CIS 100326,2776\n"
+	       "M.Winterhoff <mawin@gmx.net>, Geschw.-Scholl-Ring 17, 38444 Wolfsburg, Germany\n"
 	       "\n"
 	       "usage:	ZAPRES filename1[.BMP] filename2[.BMP] ...\n"
 	       "\n"
