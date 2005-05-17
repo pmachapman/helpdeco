@@ -23,7 +23,7 @@ files = \
 	helpdec1.c helpdeco.c helpdeco.h \
 	splitmrb.c zapres.c \
 	Makefile \
-	helpfile.txt NEWS README README.de
+	helpfile.txt NEWS README README.de ChangeLog
 
 build: helpdeco splitmrb zapres
 
