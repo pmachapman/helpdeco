@@ -1,5 +1,10 @@
 helpdeco -- utility program to dissect Windows help files
 
+Version 2.1.1:
+* Relicence to the GNU General Public Licence >= 2
+* Incorporate the NetBSD patches by Ben Collver
+* Add a Makefile (by Paul Wise)
+
 Version 2.1:
 * macros may contain rtf meta characters
 * Win95 topic names may contain (nearly) all characters
