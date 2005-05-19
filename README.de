@@ -43,12 +43,6 @@ ICO - ein eventuell der Hilfedatei zugeordnetes Icon
 BMP/WMF/SHG/MRB - alle Bilder in Dateien mit passendem Format
 Baggage - alle als Baggage in der Hilfedatei enthaltenen Dateien
 
-HELPDECO wird von der MS-DOS Kommandozeile aus mit dem Namen der zu
-bearbeitenden Datei, eventuell dem Namen einer internen Datei und
-eventuellen Optionen aufgerufen. HELPDECO läuft von der Kommandozeile
-von Windows 95 oder Windows NT als 32-bit Applikation zur Bearbeitung
-größerer Hilfedateien.
-
 HELPDECO
 Zeigt Benutzungshinweise
 

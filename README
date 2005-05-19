@@ -43,11 +43,6 @@ ICO - icon of help file if embedded
 BMP/WMF/SHG/MRB - embedded pictures in appropriate format
 Baggage - all baggage files contained in help file
 
-Call HELPDECO from MS-DOS command line. Supply name of help file to use,
-optional name of internal file, and options if appropriate.
-HELPDECO runs from Windows 95 or Windows NT command line as 32-bit
-application to handle larger help files.
-
 HELPDECO
 Displays usage
 
