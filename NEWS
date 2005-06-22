@@ -1,5 +1,8 @@
 helpdeco -- utility program to dissect Windows help files
 
+Version 2.1.2:
+* Add GCC 4.0 patch from Andreas Jochens <aj@andaco.de>
+
 Version 2.1.1:
 * Relicence to the GNU General Public Licence >= 2
 * Incorporate the NetBSD patches by Ben Collver
