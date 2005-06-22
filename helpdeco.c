@@ -4424,7 +4424,8 @@ void DumpTopic(FILE *HelpFile,long TopicPos)
 		}
 		printf("%02x %d id=%04x ",*(unsigned char *)ptr,*(unsigned char *)(ptr+1)-0x80,*(unsigned short *)(ptr+2));
 		ptr+=4;
-		x2=*((unsigned short *)ptr)++;
+		x2=*((unsigned short *)ptr);
+		ptr=((unsigned short *)ptr)+1;
 		if(x2&0x0001) printf("unknownbit01=%ld ",scanlong(&ptr)); /* found in MVBs, purpose unknown, may mean that x2 is compressed long */
 		if(x2&0x0002) printf("topspacing=%d ",scanint(&ptr));
 		if(x2&0x0004) printf("bottomspacing=%d ",scanint(&ptr));
@@ -4444,7 +4445,8 @@ void DumpTopic(FILE *HelpFile,long TopicPos)
 		    if(x1&0x20) fputs("thickborder ",stdout);
 		    if(x1&0x40) fputs("doubleborder ",stdout);
 		    if(x1&0x80) fputs("unknownborder",stdout);
-		    printf("%04x ",*((unsigned short *)ptr)++);
+			printf("%04x ",*((unsigned short *)ptr));
+			ptr=(unsigned short*)ptr+1;
 		}
 		if(x2&0x0200)
 		{

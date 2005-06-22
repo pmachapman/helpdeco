@@ -612,20 +612,41 @@ void putrtf(FILE *rtf,char *str)
 /* scan-functions for reading compressed values from LinkData1 */
 short scanint(char **ptr) /* scan a compressed short */
 {
-    if(*(*ptr)&1) return (*(((unsigned short *)(*ptr))++)>>1)-0x4000;
-    return (*(((unsigned char *)(*ptr))++)>>1)-0x40;
+    short ret;
+    if(*(*ptr)&1) {
+        ret = (*(((unsigned short *)(*ptr)))>>1)-0x4000;
+        *ptr = ((unsigned short *)*ptr)+1;
+    } else {
+        ret = (*(((unsigned char *)(*ptr)))>>1)-0x40;
+        *ptr=((unsigned char *)*ptr)+1;
+    }
+    return ret;
 }
 
 unsigned short scanword(char **ptr) /* scan a compressed unsiged short */
 {
-    if(*(*ptr)&1) return *(((unsigned short *)(*ptr))++)>>1;
-    return *(((unsigned char *)(*ptr))++)>>1;
+    short ret;
+    if(*(*ptr)&1) {
+        ret = (*(((unsigned short *)(*ptr)))>>1);
+        *ptr=((unsigned short *)*ptr)+1;
+    } else {
+        ret = (*(((unsigned char *)(*ptr)))>>1);
+        *ptr=((unsigned char *)*ptr)+1;
+    }
+    return ret;
 }
 
 long scanlong(char **ptr)  /* scan a compressed long */
 {
-    if(*(*ptr)&1) return (*(((unsigned long *)(*ptr))++)>>1)-0x40000000L;
-    return (*(((unsigned short *)(*ptr))++)>>1)-0x4000;
+    long ret;
+    if(*(*ptr)&1) {
+        ret = (*(((unsigned long *)(*ptr)))>>1)-0x40000000L;
+        *ptr=((unsigned long *)*ptr)+1;
+    } else {
+        ret = (*(((unsigned short *)(*ptr)))>>1)-0x4000;
+        *ptr=((unsigned short *)*ptr)+1;
+    }
+    return ret;
 }
 
 /* locates internal file FileName or internal directory if FileName is NULL
