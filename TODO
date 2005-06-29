@@ -1,0 +1,9 @@
+---| Stuff to do
+
+Convert to automake/autoconf.
+
+Test on different platforms, architectures and compilers.
+
+Eliminate compile warnings.
+
+Run through valgrind/cachegrind/etc and eliminate errors.
