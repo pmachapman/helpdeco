@@ -7,3 +7,5 @@ Test on different platforms, architectures and compilers.
 Eliminate compile warnings.
 
 Run through valgrind/cachegrind/etc and eliminate errors.
+
+Convert helpfile.txt to something more readable - docbook/html/etc.
