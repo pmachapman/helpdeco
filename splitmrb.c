@@ -34,6 +34,7 @@ n is a digit from 0 to 9). Discarded hotspot info will be written to stdout.
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 #include <limits.h>
 
 typedef enum {FALSE,TRUE} BOOL;
@@ -231,15 +232,26 @@ int GetPackedByte(FILE *f) // RulLen decompression
     return value;
 }
 
+#if defined(__GNUC__) && __GNUC__ >= 3
+#pragma pack (push, 1)
+#endif
+typedef struct
+{
+  u_int8_t c1,c2,c3;
+  u_int16_t x,y,w,h;
+  u_int32_t hash;
+} HOTSPOT
+#if defined(__GNUC__) && __GNUC__ < 3
+__attribute__((packed))
+#endif
+     ;
+#if defined(__GNUC__) && __GNUC__ >= 3
+#pragma pack (pop)
+#endif
+
 void PrintHotspotInfo(FILE *f)
 {
     int i,l,n;
-    typedef struct
-    {
-	u_int8_t c1,c2,c3;
-	u_int16_t x,y,w,h;
-	u_int32_t hash;
-    } HOTSPOT __attribute__((packed));
     HOTSPOT *hotspot;
     char name[80];
     char buffer[128];
@@ -301,6 +313,8 @@ int main(int argc,char *argv[])
     APMFILEHEADER afh;
     char filename[PATH_MAX];
     BOOL res[7];
+
+    assert(sizeof(HOTSPOT)==15);
 
     if(argc<2)
     {
