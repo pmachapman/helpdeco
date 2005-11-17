@@ -22,28 +22,17 @@ http://www.gnu.org
 #define __compat_h__
 
 #include <strings.h>
+#include <limits.h>
 
 #define stricmp strcasecmp
 #define strcmpi strcasecmp
 #define memicmp memcmpi
 
-#ifndef _MAX_DIR
-#define _MAX_DIR 256
-#endif
 #ifndef _MAX_EXT
 #define _MAX_EXT 256
 #endif
 #ifndef _MAX_DRIVE
 #define _MAX_DRIVE 3
-#endif
-#ifndef _MAX_FNAME
-#define _MAX_FNAME 256
-#endif
-#ifndef _MAX_PATH
-#define _MAX_PATH 260
-#endif
-#ifndef MAX_PATH
-#define MAX_PATH _MAX_PATH
 #endif
 
 void _splitpath(const char *, char *, char *, char *, char *);

@@ -34,6 +34,7 @@ n is a digit from 0 to 9). Discarded hotspot info will be written to stdout.
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
+#include <limits.h>
 
 typedef enum {FALSE,TRUE} BOOL;
 
@@ -298,7 +299,7 @@ int main(int argc,char *argv[])
     BITMAPFILEHEADER bmfh;
     BITMAPINFOHEADER bmih;
     APMFILEHEADER afh;
-    char filename[81];
+    char filename[PATH_MAX];
     BOOL res[7];
 
     if(argc<2)

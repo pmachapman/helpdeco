@@ -32,8 +32,8 @@ http://www.gnu.org
 */
 
 FILEREF *external;
-char HelpFileName[81];
-char name[_MAX_FNAME];
+char HelpFileName[NAME_MAX];
+char name[NAME_MAX];
 char ext[_MAX_EXT];
 FILE *AnnoFile;
 HASHREC *hashrec;
@@ -74,7 +74,7 @@ int NextKeywordRec,KeywordRecs;
 KEYWORDREC *KeywordRec;
 TOPICOFFSET NextKeywordOffset;
 char helpcomp[13];
-char HelpFileTitle[81];
+char HelpFileTitle[NAME_MAX];
 char TopicTitle[256];
 char *Phrases;
 unsigned int *PhraseOffsets;
@@ -607,7 +607,7 @@ void SysLoad(FILE *HelpFile) /* gets global values from SYSTEM file */
 /* compares filename a[.HLP] and filename b[.HLP], returning 0 if match */
 int filenamecmp(const char *a,const char *b)
 {
-    char aname[_MAX_FNAME],bname[_MAX_FNAME];
+    char aname[NAME_MAX],bname[NAME_MAX];
     char aext[_MAX_EXT],bext[_MAX_EXT];
     int i;
 
@@ -5264,8 +5264,8 @@ void ContextList(FILE *HelpFile)
 
 BOOL HelpDeCompile(FILE *HelpFile,char *dumpfile,int mode,char *exportname,long offset)
 {
-    char filename[81];
-    char hpjfilename[81];
+    char filename[PATH_MAX];
+    char hpjfilename[PATH_MAX];
     long FileLength;
     FILE *rtf;
     FILE *hpj;
@@ -5597,9 +5597,9 @@ BOOL HelpDeCompile(FILE *HelpFile,char *dumpfile,int mode,char *exportname,long 
 
 int main(int argc,char *argv[])
 {
-    char AnnoFileName[81];
+    char AnnoFileName[NAME_MAX];
     char drive[_MAX_DRIVE];
-    char dir[_MAX_DIR];
+    char dir[PATH_MAX];
     FILE *f;
     int mode;
     BOOL annotate;

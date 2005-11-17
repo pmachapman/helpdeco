@@ -44,7 +44,7 @@ void _splitpath(
 
 	if (dir != NULL) {
 		p = strdup(path);
-		strncpy(dir, strdup(dirname(p)), _MAX_DIR);
+		strncpy(dir, strdup(dirname(p)), PATH_MAX);
 		free(p);
 	}
 
@@ -65,7 +65,7 @@ void _splitpath(
 		if (t != NULL && strchr(t, '/') == NULL) {
 			*t = '\000';
 		}
-		strncpy(file, strdup(basename(p)), _MAX_FNAME);
+		strncpy(file, strdup(basename(p)), NAME_MAX);
 		free(p);
 	}
 
@@ -79,7 +79,7 @@ void _makepath(
 	const char *file,
 	const char *ext)
 {
-	snprintf(path, _MAX_PATH, "%s%s/%s%s",
+	snprintf(path, PATH_MAX, "%s%s/%s%s",
 		drive,
 		dir,
 		file,

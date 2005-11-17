@@ -42,8 +42,8 @@ will not rescale the image and MRBC can be applied to specify a new resolution.
 
 int backup(FILE *f,char *oldname)
 {
-    char drive[_MAX_DRIVE],dir[_MAX_DIR],fname[_MAX_FNAME],ext[_MAX_EXT];
-    char path[_MAX_PATH];
+    char drive[_MAX_DRIVE],dir[PATH_MAX],fname[NAME_MAX],ext[_MAX_EXT];
+    char path[PATH_MAX];
     char buffer[512];
     long pos,size;
     size_t bytes;
@@ -92,8 +92,8 @@ int main(int argc,char *argv[])
     FILE *f;
     int b,n,i,k,bb;
     long w,h,zero,pos;
-    char drive[_MAX_DRIVE],dir[_MAX_DIR],fname[_MAX_FNAME],ext[_MAX_EXT];
-    char path[_MAX_PATH];
+    char drive[_MAX_DRIVE],dir[PATH_MAX],fname[NAME_MAX],ext[_MAX_EXT];
+    char path[PATH_MAX];
 
     for(b=i=1;i<argc;i++)
     {
