@@ -1,5 +1,10 @@
 helpdeco -- utility program to dissect Windows help files
 
+Version 2.1.3:
+* Add patches from Dirk Jagdmann to fix struct packing in GCC >= 3,
+  use POSIX path lengths instead of DOS ones, and fix strlwr/strupr
+* Improve const correctness in the source code
+
 Version 2.1.2:
 * Add GCC 4.0 patch from Andreas Jochens <aj@andaco.de>
 
