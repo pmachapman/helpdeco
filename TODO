@@ -9,3 +9,5 @@ Eliminate compile warnings.
 Run through valgrind/cachegrind/etc and eliminate errors.
 
 Convert helpfile.txt to something more readable - docbook/html/etc.
+
+Split parts of README/README.de out into manual pages.
