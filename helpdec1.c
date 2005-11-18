@@ -21,7 +21,7 @@ http://www.gnu.org
 /* HELPDEC1.C - HELPDECO supporting functions */
 #include "helpdeco.h"
 
-void error(char *format,...)
+void error(const char *format,...)
 {
     va_list arg;
 
@@ -36,7 +36,7 @@ void error(char *format,...)
 #ifndef HAVE_STRNCPY
 #ifndef HAVE_STRLCPY
 
-size_t strlcpy(char *dest,char *src,size_t len) /* limited string copy */
+size_t strlcpy(char *dest,const char *src,size_t len) /* limited string copy */
 {
     size_t i;
 
@@ -72,7 +72,7 @@ void *my_realloc(void *ptr,long bytes) /* save realloc function */
     return ptr;
 }
 
-char *my_strdup(char *ptr) /* save strdup function */
+char *my_strdup(const char *ptr) /* save strdup function */
 {
     size_t len;
     char *dup;
@@ -549,7 +549,7 @@ void HexDumpMemory(unsigned char *bypMem,unsigned int FileLength)
 
 /* write str to stdout, replacing nonprintable characters with hex codes,
 // returning str+len. PrintString doesn't stop at NUL characters */
-char *PrintString(char *str,unsigned int len)
+char *PrintString(const char *str,unsigned int len)
 {
     while(len-->0)
     {
@@ -589,7 +589,7 @@ BOOL GetBit(FILE *f)
     return (value&mask)!=0L;
 }
 /* output str to RTF file, escaping neccessary characters */
-void putrtf(FILE *rtf,char *str)
+void putrtf(FILE *rtf,const char *str)
 {
     if(rtf) while(*str)
     {
@@ -653,7 +653,7 @@ long scanlong(char **ptr)  /* scan a compressed long */
 // reads FILEHEADER and returns TRUE with current position in HelpFile set
 // to first byte of data of FileName or returns FALSE if not found. Stores
 // UsedSpace (that's the file size) in FileLength if FileLength isn't NULL */
-BOOL SearchFile(FILE *HelpFile,char *FileName,long *FileLength)
+BOOL SearchFile(FILE *HelpFile,const char *FileName,long *FileLength)
 {
     HELPHEADER Header;
     FILEHEADER FileHdr;
@@ -1045,7 +1045,7 @@ void LinkDump(FILE *HelpFile)
     }
 }
 
-void AnnotationDump(FILE *HelpFile,long FileLength,char *name)
+void AnnotationDump(FILE *HelpFile,long FileLength,const char *name)
 {
     long l;
 

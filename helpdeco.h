@@ -608,15 +608,15 @@ typedef struct mfile          /* a class would be more appropriate */
 }
 MFILE;
 
-extern void error(char *format,...);
+extern void error(const char *format,...);
 #ifdef HAVE_STRNCPY
 #define strlcpy strncpy
 #elif !defined(HAVE_STRLCPY)
-extern size_t strlcpy(char *dest,char *src,size_t len); /* limited string copy */
+extern size_t strlcpy(char *dest,const char *src,size_t len); /* limited string copy */
 #endif /* !defined(HAVE_STRLCPY) */
 extern void *my_malloc(long bytes); /* save malloc function */
 extern void *my_realloc(void *ptr,long bytes); /* save realloc function */
-extern char *my_strdup(char *ptr); /* save strdup function */
+extern char *my_strdup(const char *ptr); /* save strdup function */
 extern size_t my_fread(void *ptr,long bytes,FILE *f); /* save fread function */
 extern size_t my_gets(char *ptr,size_t size,FILE *f);  /* read nul terminated string from regular file */
 extern void my_fclose(FILE *f); /* checks if disk is full */
@@ -652,13 +652,13 @@ extern long DecompressIntoBuffer(int method,FILE *HelpFile,long bytes,char *ptr,
 extern long DecompressIntoFile(int method,MFILE *f,long bytes,FILE *fTarget);
 extern void HexDump(FILE *f,long FileLength,long offset);
 extern void HexDumpMemory(unsigned char *bypMem,unsigned int FileLength);
-extern char *PrintString(char *str,unsigned int len);
+extern char *PrintString(const char *str,unsigned int len);
 extern BOOL GetBit(FILE *f);
-extern void putrtf(FILE *rtf,char *str);
+extern void putrtf(FILE *rtf,const char *str);
 extern short scanint(char **ptr); /* scan a compressed short */
 extern unsigned short scanword(char **ptr); /* scan a compressed unsiged short */
 extern long scanlong(char **ptr);  /* scan a compressed long */
-extern BOOL SearchFile(FILE *HelpFile,char *FileName,long *FileLength);
+extern BOOL SearchFile(FILE *HelpFile,const char *FileName,long *FileLength);
 extern short GetFirstPage(FILE *HelpFile,BUFFER *buf,long *TotalEntries);
 extern short GetNextPage(FILE *HelpFile,BUFFER *buf); /* walk Btree */
 extern SYSTEMRECORD *GetNextSystemRecord(SYSTEMRECORD *SysRec);
@@ -674,7 +674,7 @@ extern void KWDataDump(FILE *HelpFile,long FileLength);
 extern void CatalogDump(FILE *HelpFile);
 extern void CTXOMAPDump(FILE *HelpFile);
 extern void LinkDump(FILE *HelpFile);
-extern void AnnotationDump(FILE *HelpFile,long FileLength,char *name);
+extern void AnnotationDump(FILE *HelpFile,long FileLength,const char *name);
 
 extern BOOL overwrite; /* ugly: declared in HELPDECO.C */
 #endif
