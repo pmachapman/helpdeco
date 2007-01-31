@@ -5624,7 +5624,7 @@ int main(int argc,char *argv[])
     /* scan arguments */
     for(i=1;i<argc;i++)
     {
-	if(argv[i][0]=='/'||argv[i][0]=='-')
+	if(argv[i][0]==OPTCHAR)
 	{
 	    switch(tolower((unsigned char)argv[i][1]))
 	    {
@@ -5787,18 +5787,18 @@ int main(int argc,char *argv[])
 	fprintf(stderr,"HELPDECO - decompile *.HLP/*.MVB files of Windows 3.x / 95 - %d bit Version 2.1.3\n"
 		       "M.Winterhoff <mawin@gmx.net>, Geschw.-Scholl-Ring 17, 38444 Wolfsburg, Germany\n"
 		       "\n"
-		       "usage:   HELPDECO helpfile[.hlp]    [/y]  - decompile helpfile into all sources\n"
-		       "         HELPDECO helpfile[.hlp]    [/y] /a[annfile.ANN]  - and add annotations\n"
-		       "         HELPDECO helpfile[.hlp] /r [/y] [/n]    - decompile into lookalike RTF\n"
-		       "         HELPDECO helpfile[.hlp] /c [/y]  - generate Win95 .CNT content file\n"
-		       "         HELPDECO helpfile[.hlp] /l       - list entry points of this helpfile\n"
-		       "         HELPDECO helpfile[.hlp] /e [/f]  - list references to other helpfiles\n"
-		       "         HELPDECO helpfile[.hlp] /p [/f]  - check references to other helpfiles\n"
-		       "         HELPDECO helpfile[.hlp] /d [/x]  - display internal directory\n"
-		       "         HELPDECO helpfile[.hlp] \"internalfile\" [/x]    - display internal file\n"
+		       "usage:   HELPDECO helpfile[.hlp]    ["OPTSTR"y]  - decompile helpfile into all sources\n"
+		       "         HELPDECO helpfile[.hlp]    ["OPTSTR"y] "OPTSTR"a[annfile.ANN]  - and add annotations\n"
+		       "         HELPDECO helpfile[.hlp] "OPTSTR"r ["OPTSTR"y] ["OPTSTR"n]    - decompile into lookalike RTF\n"
+		       "         HELPDECO helpfile[.hlp] "OPTSTR"c ["OPTSTR"y]  - generate Win95 .CNT content file\n"
+		       "         HELPDECO helpfile[.hlp] "OPTSTR"l       - list entry points of this helpfile\n"
+		       "         HELPDECO helpfile[.hlp] "OPTSTR"e ["OPTSTR"f]  - list references to other helpfiles\n"
+		       "         HELPDECO helpfile[.hlp] "OPTSTR"p ["OPTSTR"f]  - check references to other helpfiles\n"
+		       "         HELPDECO helpfile[.hlp] "OPTSTR"d ["OPTSTR"x]  - display internal directory\n"
+		       "         HELPDECO helpfile[.hlp] \"internalfile\" ["OPTSTR"x]    - display internal file\n"
 		       "         HELPDECO helpfile[.hlp] \"internalfile\" filename - export internal file\n"
-		       "options: /y overwrite without warning, /f list referencing topics, /x hex dump\n"
-		       "         /g no guessing, /hprefix add known contextid prefix, /n no page breaks\n"
+		       "options: "OPTSTR"y overwrite without warning, "OPTSTR"f list referencing topics, "OPTSTR"x hex dump\n"
+		       "         "OPTSTR"g no guessing, "OPTSTR"hprefix add known contextid prefix, "OPTSTR"n no page breaks\n"
 		       "To recreate all source files neccessary to rebuild a Windows helpfile, create\n"
 		       "a directory, change to this directory and call HELPDECO with the path and name\n"
 		       "of the helpfile to dissect. HELPDECO will extract all files contained in the\n"

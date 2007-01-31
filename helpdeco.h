@@ -614,6 +614,15 @@ extern void error(const char *format,...);
 #elif !defined(HAVE_STRLCPY)
 extern size_t strlcpy(char *dest,const char *src,size_t len); /* limited string copy */
 #endif /* !defined(HAVE_STRLCPY) */
+#ifndef OPTCHAR
+#ifdef _WIN32
+#define OPTCHAR '/'
+#define OPTSTR "/"
+#else
+#define OPTCHAR '-'
+#define OPTSTR "-"
+#endif
+#endif
 extern void *my_malloc(long bytes); /* save malloc function */
 extern void *my_realloc(void *ptr,long bytes); /* save realloc function */
 extern char *my_strdup(const char *ptr); /* save strdup function */
