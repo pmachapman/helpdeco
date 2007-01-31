@@ -25,6 +25,8 @@ files = \
 	Makefile \
 	helpfile.txt NEWS README README.de ChangeLog
 
+CFLAGS+=-Wall
+
 build: helpdeco splitmrb zapres
 
 helpdeco: helpdeco.o helpdec1.o compat.o
