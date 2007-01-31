@@ -52,3 +52,6 @@ dist:
 	done
 	tar --gzip --create --file $(distdir).tar.gz $(distdir)
 	-rm -rf $(distdir)
+
+ChangeLog:
+	cvs2cl --FSF
