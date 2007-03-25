@@ -43,12 +43,10 @@ typedef struct { char a,b,c; } align;
 typedef enum {FALSE,TRUE} BOOL;
 
 /* Used to more easily define some functions */
-#define r(a) 
-//#define r(a) \
-//BOOL read_##a(a* obj, FILE* file);
-#define r2(a,b) 
-//#define r2(a,b) \
-//BOOL read_##a##_to_##b(b*obj,FILE*file);
+#define r(a) \
+BOOL read_##a(a* obj, FILE* file);
+#define r2(a,b) \
+BOOL read_##a##_to_##b(b*obj,FILE*file);
 
 typedef struct               /* structure at beginning of help file */
 {
