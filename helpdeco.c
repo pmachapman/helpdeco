@@ -3831,7 +3831,7 @@ void ContextLoad(FILE *HelpFile)
 	{
 	    ContextRec=my_malloc(entries*sizeof(CONTEXTREC));
 	    ContextRecs=0;
-	    while(n)
+	    while(n && ContextRecs < entries)
 	    {
 		my_fread(ContextRec+ContextRecs,n*sizeof(CONTEXTREC),HelpFile);
 		ContextRecs+=n;
