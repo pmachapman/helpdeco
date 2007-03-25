@@ -42,6 +42,14 @@ typedef struct { char a,b,c; } align;
 
 typedef enum {FALSE,TRUE} BOOL;
 
+/* Used to more easily define some functions */
+#define r(a) 
+//#define r(a) \
+//BOOL read_##a(a* obj, FILE* file);
+#define r2(a,b) 
+//#define r2(a,b) \
+//BOOL read_##a##_to_##b(b*obj,FILE*file);
+
 typedef struct               /* structure at beginning of help file */
 {
     long Magic;              /* 0x00035F3F */
@@ -50,6 +58,8 @@ typedef struct               /* structure at beginning of help file */
     long EntireFileSize;     /* size of entire help file in bytes */
 }
 HELPHEADER;
+r(HELPHEADER)
+#define sizeof_HELPHEADER 4*4
 
 typedef struct FILEHEADER    /* structure at FileOffset of each internal file */
 {
@@ -58,6 +68,8 @@ typedef struct FILEHEADER    /* structure at FileOffset of each internal file */
     unsigned char FileFlags; /* normally 4 */
 }
 FILEHEADER;
+r(FILEHEADER)
+#define sizeof_FILEHEADER 4*2+1
 
 typedef struct BTREEHEADER   /* structure after FILEHEADER of each Btree */
 {
@@ -74,6 +86,8 @@ typedef struct BTREEHEADER   /* structure after FILEHEADER of each Btree */
     long TotalBtreeEntries;  /* number of entries in Btree */
 }
 BTREEHEADER;
+r(BTREEHEADER)
+#define sizeof_BTREEHEADER 2*3+16+6*2+4
 
 typedef struct BTREEINDEXHEADER /* structure at beginning of every index-page */
 {
@@ -82,6 +96,8 @@ typedef struct BTREEINDEXHEADER /* structure at beginning of every index-page */
     short PreviousPage;      /* page number of previous page */
 }
 BTREEINDEXHEADER;
+r(BTREEINDEXHEADER)
+#define sizeof_BTREEINDEXHEADER 2*3
 
 typedef struct BTREENODEHEADER /* structure at beginning of every leaf-page */
 {
@@ -91,6 +107,10 @@ typedef struct BTREENODEHEADER /* structure at beginning of every leaf-page */
     short NextPage;          /* page number of next leaf-page or -1 */
 }
 BTREENODEHEADER;
+r(BTREENODEHEADER)
+#define sizeof_BTREENODEHEADER 2*4
+
+r2(BTREEINDEXHEADER,BTREENODEHEADER)
 
 typedef struct SYSTEMHEADER  /* structure at beginning of |SYSTEM file */
 {
@@ -101,6 +121,8 @@ typedef struct SYSTEMHEADER  /* structure at beginning of |SYSTEM file */
     unsigned short Flags;    /* tells you how the help file is compressed */
 }
 SYSTEMHEADER;
+r(SYSTEMHEADER)
+#define sizeof_SYSTEMHEADER 2*3+4+2
 
 typedef struct               /* internal structure */
 {
@@ -194,6 +216,8 @@ typedef struct PHRINDEXHDR   /* structure of beginning of |PhrIndex file */
     unsigned short always4A00;    /* sometimes 0x4A01, 0x4A02 */
 }
 PHRINDEXHDR;
+r(PHRINDEXHDR)
+#define sizeof_PHRINDEXHDR 4*6+2*3
 
 typedef struct FONTHEADER    /* structure of beginning of |FONT file */
 {
@@ -345,6 +369,8 @@ typedef struct KWMAPREC       /* structure of |xWMAP leaf-page entries */
     unsigned short PageNum;   /* page number that keywords are associated with */
 }
 KWMAPREC;
+r(KWMAPREC);
+#define sizeof_KWMAPREC 4*2
 
 typedef long TOPICPOS;        /* TOPICPOS/DecompressSize = block number, TOPICPOS%DecompressSize = offset into decompression buffer (including sizeof(TOPICBLOCKHEADER)) */
 
@@ -409,6 +435,8 @@ typedef struct                /* structure of |CTXOMAP file entries */
     long TopicOffset;
 }
 CTXOMAPREC;
+r(CTXOMAPREC)
+#define sizeof_CTXOMAPREC 4*2
 
 typedef struct                /* structure of |CONTEXT leaf-page entry */
 {
@@ -431,6 +459,8 @@ typedef struct                /* structure of *.GRP file header */
     unsigned long Unknown3;
 }
 GROUPHEADER;
+r(GROUPHEADER)
+#define sizeof_GROUPHEADER 4*10
 
 typedef struct                /* internal use */
 {
@@ -447,6 +477,8 @@ typedef struct                /* structure of STOPn.STP header */
     unsigned short Unused[17];
 }
 STOPHEADER;
+r(STOPHEADER)
+#define sizeof_STOPHEADER 4+2+2*17
 
 typedef struct                /* structure of |VIOLA leaf-page entry */
 {
@@ -464,6 +496,8 @@ typedef struct                /* structure of |CATALOG header */
    unsigned char zero[30];
 }
 CATALOGHEADER;
+r(CATALOGHEADER)
+#define sizeof_CATALOGHEADER 2*3+4+30
 
 typedef struct                /* structure of Windows Bitmap BMP file */
 {
