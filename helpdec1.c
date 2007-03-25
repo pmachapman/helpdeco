@@ -1053,3 +1053,164 @@ void AnnotationDump(FILE *HelpFile,long FileLength,const char *name)
     for(l=0;l<FileLength;l++) putchar(getc(HelpFile));
     putchar('\n');
 }
+
+typedef unsigned char BYTE;
+typedef unsigned short WORD;
+typedef unsigned int DWORD;
+typedef unsigned long long QWORD;
+
+inline WORD get_WORD(BYTE* b){
+	return b[0]|b[1]<<8;
+}
+
+inline DWORD get_DWORD(BYTE* b){
+	return b[0]|b[1]<<8|b[2]<<16|b[3]<<24;
+}
+
+inline QWORD get_QWORD(BYTE* b){
+	return b[0]|b[1]<<8|b[2]<<16|b[3]<<24|(QWORD)b[4]<<32|(QWORD)b[5]<<40|(QWORD)b[6]<<48|(QWORD)b[7]<<56;
+}
+
+#define s(a) \
+BOOL read_##a(a* obj, FILE* file){ \
+	BYTE buf[sizeof_##a]; \
+	if( my_fread(buf,sizeof_##a,file) ){ \
+		uint i = 0;
+#define s2(a,b) \
+BOOL read_##a##_to_##b(b* obj, FILE* file){ \
+	BYTE buf[sizeof_##a]; \
+	if( my_fread(buf,sizeof_##a,file) ){ \
+		uint i = 0;
+#define b(a) \
+	obj->a = *(buf+i); i++;
+#define w(a) \
+	obj->a = get_WORD(buf+i); i += 2;
+#define d(a) \
+	obj->a = get_DWORD(buf+i); i += 4;
+#define q(a) \
+	obj->a = get_QWORD(buf+i); i += 8;
+#define e \
+		return TRUE; \
+	} else return FALSE; \
+}
+
+s(HELPHEADER)
+d(Magic)
+d(DirectoryStart)
+d(FreeChainStart)
+d(EntireFileSize)
+e
+
+s(FILEHEADER)
+d(ReservedSpace)
+d(UsedSpace)
+b(FileFlags)
+e
+
+s(BTREEHEADER)
+w(Magic)
+w(Flags)
+w(PageSize)
+memcpy(&obj->Structure[0],buf+i,0x10); i+=0x10;
+w(MustBeZero)
+w(PageSplits)
+w(RootPage)
+w(MustBeNegOne)
+w(TotalPages)
+w(NLevels)
+d(TotalBtreeEntries)
+e
+
+s(BTREEINDEXHEADER)
+w(Unknown)
+w(NEntries)
+w(PreviousPage)
+e
+
+/* for reading index nodes into regular nodes, boink */
+s2(BTREEINDEXHEADER,BTREENODEHEADER)
+w(Unknown)
+w(NEntries)
+w(PreviousPage)
+obj->NextPage=0;
+e
+
+s(BTREENODEHEADER)
+w(Unknown)
+w(NEntries)
+w(PreviousPage)
+w(NextPage)
+e
+
+s(SYSTEMHEADER)
+w(Magic)
+w(Minor)
+w(Major)
+d(GenDate)
+w(Flags)
+e
+
+s(GROUPHEADER)
+d(Magic)
+d(BitmapSize)
+d(LastTopic)
+d(FirstTopic)
+d(TopicsUsed)
+d(TopicCount)
+d(GroupType)
+d(Unknown1)
+d(Unknown2)
+d(Unknown3)
+e
+
+s(KWMAPREC)
+d(FirstRec)
+w(PageNum)
+e
+
+s(CATALOGHEADER)
+w(magic)
+w(always8)
+w(always4)
+d(entries)
+memcpy(&obj->zero[0],buf+i,30); i+=30;
+e
+
+s(CTXOMAPREC)
+d(MapID)
+d(TopicOffset)
+e
+
+s(STOPHEADER)
+uint j = 0;
+d(Magic)
+w(BytesUsed)
+w(Unused[j++])
+w(Unused[j++])
+w(Unused[j++])
+w(Unused[j++])
+w(Unused[j++])
+w(Unused[j++])
+w(Unused[j++])
+w(Unused[j++])
+w(Unused[j++])
+w(Unused[j++])
+w(Unused[j++])
+w(Unused[j++])
+w(Unused[j++])
+w(Unused[j++])
+w(Unused[j++])
+w(Unused[j++])
+w(Unused[j++])
+e
+
+s(PHRINDEXHDR)
+d(always4A01)
+d(entries)
+d(compressedsize)
+d(phrimagesize)
+d(phrimagecompressedsize)
+d(always0)
+w(bits)
+w(unknown)
+w(always4A00)
