@@ -578,7 +578,7 @@ BOOL GetBit(FILE *f)
 	mask<<=1;
 	if(!mask)
 	{
-	    fread(&value,4,1,f);
+	    value = getdw(f);
 	    mask=1L;
 	}
     }
@@ -664,21 +664,21 @@ BOOL SearchFile(FILE *HelpFile,const char *FileName,long *FileLength)
     int i,n;
 
     fseek(HelpFile,0L,SEEK_SET);
-    my_fread(&Header,sizeof(Header),HelpFile);
+    read_HELPHEADER(&Header,HelpFile);
     if(Header.Magic!=0x00035F3FL) return FALSE;
     fseek(HelpFile,Header.DirectoryStart,SEEK_SET);
-    my_fread(&FileHdr,sizeof(FileHdr),HelpFile);
+    read_FILEHEADER(&FileHdr,HelpFile);
     if(!FileName)
     {
 	if(FileLength) *FileLength=FileHdr.UsedSpace;
 	return TRUE;
     }
-    my_fread(&BtreeHdr,sizeof(BtreeHdr),HelpFile);
+    read_BTREEHEADER(&BtreeHdr,HelpFile);
     offset=ftell(HelpFile);
     fseek(HelpFile,offset+BtreeHdr.RootPage*(long)BtreeHdr.PageSize,SEEK_SET);
     for(n=1;n<BtreeHdr.NLevels;n++)
     {
-	my_fread(&CurrNode,sizeof(BTREEINDEXHEADER),HelpFile);
+	read_BTREEINDEXHEADER_to_BTREENODEHEADER(&CurrNode,HelpFile);
 	for(i=0;i<CurrNode.NEntries;i++)
 	{
 	    my_gets(TempFile,sizeof(TempFile),HelpFile);
@@ -687,7 +687,7 @@ BOOL SearchFile(FILE *HelpFile,const char *FileName,long *FileLength)
 	}
 	fseek(HelpFile,offset+CurrNode.PreviousPage*(long)BtreeHdr.PageSize,SEEK_SET);
     }
-    my_fread(&CurrNode,sizeof(CurrNode),HelpFile);
+    read_BTREENODEHEADER(&CurrNode,HelpFile);
     for(i=0;i<CurrNode.NEntries;i++)
     {
 	my_gets(TempFile,sizeof(TempFile),HelpFile);
@@ -695,7 +695,7 @@ BOOL SearchFile(FILE *HelpFile,const char *FileName,long *FileLength)
 	if(strcmp(TempFile,FileName)==0)
 	{
 	    fseek(HelpFile,offset,SEEK_SET);
-	    my_fread(&FileHdr,sizeof(FileHdr),HelpFile);
+	    read_FILEHEADER(&FileHdr,HelpFile);
 	    if(FileLength) *FileLength=FileHdr.UsedSpace;
 	    return TRUE;
 	}
@@ -715,7 +715,7 @@ short GetFirstPage(FILE *HelpFile,BUFFER *buf,long *TotalEntries)
     BTREEHEADER BTreeHdr;
     BTREENODEHEADER CurrNode;
 
-    my_fread(&BTreeHdr,sizeof(BTreeHdr),HelpFile);
+    read_BTREEHEADER(&BTreeHdr,HelpFile);
     if(TotalEntries) *TotalEntries=BTreeHdr.TotalBtreeEntries;
     if(!BTreeHdr.TotalBtreeEntries) return 0;
     buf->FirstLeaf=ftell(HelpFile);
@@ -723,10 +723,10 @@ short GetFirstPage(FILE *HelpFile,BUFFER *buf,long *TotalEntries)
     fseek(HelpFile,buf->FirstLeaf+BTreeHdr.RootPage*(long)BTreeHdr.PageSize,SEEK_SET);
     for(CurrLevel=1;CurrLevel<BTreeHdr.NLevels;CurrLevel++)
     {
-	my_fread(&CurrNode,sizeof(BTREEINDEXHEADER),HelpFile);
+	read_BTREEINDEXHEADER_to_BTREENODEHEADER(&CurrNode,HelpFile);
 	fseek(HelpFile,buf->FirstLeaf+CurrNode.PreviousPage*(long)BTreeHdr.PageSize,SEEK_SET);
     }
-    my_fread(&CurrNode,sizeof(CurrNode),HelpFile);
+    read_BTREENODEHEADER(&CurrNode,HelpFile);
     buf->NextPage=CurrNode.NextPage;
     return CurrNode.NEntries;
 }
@@ -737,7 +737,7 @@ short GetNextPage(FILE *HelpFile,BUFFER *buf) /* walk Btree */
 
     if(buf->NextPage==-1) return 0;
     fseek(HelpFile,buf->FirstLeaf+buf->NextPage*(long)buf->PageSize,SEEK_SET);
-    my_fread(&CurrNode,sizeof(CurrNode),HelpFile);
+    read_BTREENODEHEADER(&CurrNode,HelpFile);
     buf->NextPage=CurrNode.NextPage;
     return CurrNode.NEntries;
 }
@@ -776,7 +776,7 @@ SYSTEMRECORD *GetFirstSystemRecord(FILE *HelpFile)
     long FileLength;
 
     if(!SearchFile(HelpFile,"|SYSTEM",&FileLength)) return NULL;
-    my_fread(&SysHdr,sizeof(SysHdr),HelpFile);
+    read_SYSTEMHEADER(&SysHdr,HelpFile);
     if(SysHdr.Major!=1||SysHdr.Minor<16) return NULL;
     SysRec=my_malloc(sizeof(SYSTEMRECORD));
     SysRec->File=HelpFile;
@@ -967,7 +967,7 @@ void GroupDump(FILE *HelpFile)
     char *ptr;
     unsigned long i;
 
-    my_fread(&GroupHeader,sizeof(GroupHeader),HelpFile);
+    read_GROUPHEADER(&GroupHeader,HelpFile);
     switch(GroupHeader.GroupType)
     {
     case 2:
@@ -992,7 +992,7 @@ void KWMapDump(FILE *HelpFile)
     n=my_getw(HelpFile);
     for(i=0;i<n;i++)
     {
-	my_fread(&KeywordMap,sizeof(KWMAPREC),HelpFile);
+	read_KWMAPREC(&KeywordMap,HelpFile);
 	printf("Keyword: %-12ld LeafPage: %u\n",KeywordMap.FirstRec,KeywordMap.PageNum);
     }
 }
@@ -1012,7 +1012,7 @@ void CatalogDump(FILE *HelpFile)
     CATALOGHEADER catalog;
     long n;
 
-    my_fread(&catalog,sizeof(catalog),HelpFile);
+    read_CATALOGHEADER(&catalog,HelpFile);
     for(n=0;n<catalog.entries;n++)
     {
 	printf("Topic: %-12ld TopicOffset: 0x%08lx\n",n+1,getdw(HelpFile));
@@ -1027,7 +1027,7 @@ void CTXOMAPDump(FILE *HelpFile)
     n=my_getw(HelpFile);
     for(i=0;i<n;i++)
     {
-	my_fread(&CTXORec,sizeof(CTXORec),HelpFile);
+	read_CTXOMAPREC(&CTXORec,HelpFile);
 	printf("MapId: %-12ld TopicOffset: 0x%08lX\n",CTXORec.MapID,CTXORec.TopicOffset);
     }
 }
@@ -1040,7 +1040,9 @@ void LinkDump(FILE *HelpFile)
     n=my_getw(HelpFile);
     for(i=0;i<n;i++)
     {
-	my_fread(data,sizeof(data),HelpFile);
+		data[0] = getdw(HelpFile);
+		data[1] = getdw(HelpFile);
+		data[2] = getdw(HelpFile);
 	printf("Annotation for topic 0x%08lx 0x%08lx 0x%08lx\n",data[0],data[1],data[2]);
     }
 }
@@ -1081,6 +1083,12 @@ BOOL read_##a##_to_##b(b* obj, FILE* file){ \
 	BYTE buf[sizeof_##a]; \
 	if( my_fread(buf,sizeof_##a,file) ){ \
 		uint i = 0;
+#define g(a) \
+BOOL get_##a(a* obj, BYTE* buf){ \
+	if( 1 ){ \
+		uint i = 0;
+#define a(a,b) \
+	memcpy(&obj->a[0],buf+i,b); i+=b;
 #define b(a) \
 	obj->a = *(buf+i); i++;
 #define w(a) \
@@ -1111,7 +1119,7 @@ s(BTREEHEADER)
 w(Magic)
 w(Flags)
 w(PageSize)
-memcpy(&obj->Structure[0],buf+i,0x10); i+=0x10;
+a(Structure,0x10)
 w(MustBeZero)
 w(PageSplits)
 w(RootPage)
@@ -1173,44 +1181,183 @@ w(magic)
 w(always8)
 w(always4)
 d(entries)
-memcpy(&obj->zero[0],buf+i,30); i+=30;
+a(zero,30)
 e
 
-s(CTXOMAPREC)
+g(CTXOMAPREC)
 d(MapID)
 d(TopicOffset)
 e
+
+s(CTXOMAPREC)
+get_CTXOMAPREC(obj,buf+i);i+=sizeof_CTXOMAPREC;
+e
+
+BOOL read_CTXOMAPRECs(CTXOMAPREC*objs,int n,FILE*file){
+	BYTE buf[sizeof_CTXOMAPREC]; int i;
+	for(i = 0; i < n; i++){
+		if( my_fread(buf,sizeof_CTXOMAPREC,file) ){
+			objs[i].MapID = get_DWORD(buf);
+			objs[i].TopicOffset = get_DWORD(buf+4);
+		} else return FALSE;
+	}
+	return TRUE;
+}
 
 s(STOPHEADER)
 uint j = 0;
 d(Magic)
 w(BytesUsed)
-w(Unused[j++])
-w(Unused[j++])
-w(Unused[j++])
-w(Unused[j++])
-w(Unused[j++])
-w(Unused[j++])
-w(Unused[j++])
-w(Unused[j++])
-w(Unused[j++])
-w(Unused[j++])
-w(Unused[j++])
-w(Unused[j++])
-w(Unused[j++])
-w(Unused[j++])
-w(Unused[j++])
-w(Unused[j++])
-w(Unused[j++])
+while(j<17){ w(Unused[j++]) }
 e
 
 s(PHRINDEXHDR)
+WORD bitfield = 0;
 d(always4A01)
 d(entries)
 d(compressedsize)
 d(phrimagesize)
 d(phrimagecompressedsize)
 d(always0)
-w(bits)
-w(unknown)
+bitfield = get_WORD(buf+i); i += 2;
+obj->bits = bitfield;
+obj->unknown = bitfield>>4;
 w(always4A00)
+e
+
+s(CONTEXTREC)
+d(HashValue)
+d(TopicOffset)
+e
+
+s(FONTHEADER)
+w(NumFacenames)
+w(NumDescriptors)
+w(FacenamesOffset)
+w(DescriptorsOffset)
+w(NumFormats)
+w(FormatsOffset)
+w(NumCharmaps)
+w(CharmapsOffset)
+e
+
+s(CHARMAPHEADER)
+uint j = 0;
+w(Magic)
+w(Size)
+w(Unknown1)
+w(Unknown2)
+w(Entries)
+w(Ligatures)
+w(LigLen)
+while(j<13){ w(Unknown[j++]) }
+e
+
+g(MVBFONT)
+w(FontName)
+w(expndtw)
+w(style)
+a(FGRGB,3)
+a(BGRGB,3)
+d(Height)
+a(mostlyzero,12)
+w(Weight)
+b(unknown10)
+b(unknown11)
+b(Italic)
+b(Underline)
+b(StrikeOut)
+b(DoubleUnderline)
+b(SmallCaps)
+b(unknown17)
+b(unknown18)
+b(PitchAndFamily)
+b(unknown20)
+b(up)
+e
+
+s(MVBFONT)
+get_MVBFONT(obj,buf+i);i+=sizeof_MVBFONT;
+e
+
+s(MVBSTYLE)
+w(StyleNum)
+w(BasedOn)
+get_MVBFONT(&obj->font,buf+i);i+=sizeof_MVBFONT;
+a(unknown,35)
+a(StyleName,65)
+e
+
+g(NEWFONT)
+b(unknown1)
+w(FontName)
+a(FGRGB,3)
+a(BGRGB,3)
+b(unknown5)
+b(unknown6)
+b(unknown7)
+b(unknown8)
+b(unknown9)
+d(Height)
+a(mostlyzero,12)
+w(Weight)
+b(unknown10)
+b(unknown11)
+b(Italic)
+b(Underline)
+b(StrikeOut)
+b(DoubleUnderline)
+b(SmallCaps)
+b(unknown17)
+b(unknown18)
+b(PitchAndFamily)
+e
+
+s(NEWFONT)
+get_NEWFONT(obj,buf+i);i+=sizeof_NEWFONT;
+e
+
+s(NEWSTYLE)
+w(StyleNum)
+w(BasedOn)
+get_NEWFONT(&obj->font,buf+i);i+=sizeof_NEWFONT;
+a(unknown,35)
+a(StyleName,65)
+e
+
+s(OLDFONT)
+b(Attributes)
+b(HalfPoints)
+b(FontFamily)
+w(FontName)
+a(FGRGB,3)
+a(BGRGB,3)
+e
+
+s(TOPICBLOCKHEADER)
+d(LastTopicLink)
+d(FirstTopicLink)
+d(LastTopicHeader)
+e
+
+BOOL read_VIOLARECs(VIOLAREC*objs,int n,FILE*file){
+	BYTE buf[sizeof_VIOLAREC]; int i;
+	for(i = 0; i < n; i++){
+		if( my_fread(buf,sizeof_VIOLAREC,file) ){
+			objs[i].TopicOffset = get_DWORD(buf);
+			objs[i].WindowNumber = get_DWORD(buf+4);
+		} else return FALSE;
+	}
+	return TRUE;
+}
+
+BOOL read_CONTEXTRECs(CONTEXTREC*objs,int n,FILE*file){
+	BYTE buf[sizeof_CONTEXTREC]; int i;
+	for(i = 0; i < n; i++){
+		if( my_fread(buf,sizeof_CONTEXTREC,file) ){
+			objs[i].HashValue = get_DWORD(buf);
+			objs[i].TopicOffset = get_DWORD(buf+4);
+		} else return FALSE;
+	}
+	return TRUE;
+}

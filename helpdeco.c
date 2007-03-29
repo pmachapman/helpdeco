@@ -465,7 +465,7 @@ void SysLoad(FILE *HelpFile) /* gets global values from SYSTEM file */
 	fputs("Internal |SYSTEM file not found. Can't continue.\n",stderr);
 	exit(1);
     }
-    my_fread(&SysHdr,sizeof(SysHdr),HelpFile);
+    read_SYSTEMHEADER(&SysHdr,HelpFile);
     before31=SysHdr.Minor<16;
     after31=SysHdr.Minor>21;
     multi=SysHdr.Minor==27;
@@ -697,7 +697,7 @@ void CheckReferences(void)
 			    n=my_getw(f);
 			    for(i=0;i<n;i++)
 			    {
-				my_fread(&CTXORec,sizeof(CTXORec),f);
+				read_CTXOMAPREC(&CTXORec,f);
 				if(CTXORec.MapID==ptr->hash) /* hash is context id */
 				{
 				    found=TRUE;
@@ -710,13 +710,13 @@ void CheckReferences(void)
 		    {
 			if(SearchFile(f,"|CONTEXT",NULL))
 			{
-			    my_fread(&BTreeHdr,sizeof(BTreeHdr),f);
+			    read_BTREEHEADER(&BTreeHdr,f);
 			    offset=ftell(f);
 			    CurrNode.PreviousPage=BTreeHdr.RootPage;
 			    for(n=1;n<BTreeHdr.NLevels;n++)
 			    {
 				fseek(f,offset+CurrNode.PreviousPage*(long)BTreeHdr.PageSize,SEEK_SET);
-				my_fread(&CurrNode,sizeof(BTREEINDEXHEADER),f);
+				read_BTREEINDEXHEADER_to_BTREENODEHEADER(&CurrNode,f);
 				for(i=0;i<CurrNode.NEntries;i++)
 				{
 				    ContextRec.HashValue=getdw(f);
@@ -725,10 +725,10 @@ void CheckReferences(void)
 				}
 			    }
 			    fseek(f,offset+CurrNode.PreviousPage*(long)BTreeHdr.PageSize,SEEK_SET);
-			    my_fread(&CurrNode,sizeof(BTREENODEHEADER),f);
+			    read_BTREENODEHEADER(&CurrNode,f);
 			    for(i=0;i<CurrNode.NEntries;i++)
 			    {
-				my_fread(&ContextRec,sizeof(ContextRec),f);
+				read_CONTEXTREC(&ContextRec,f);
 				if(ContextRec.HashValue==ptr->hash) found=TRUE;
 				if(ContextRec.HashValue>=ptr->hash) break;
 			    }
@@ -1472,7 +1472,7 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 
     if(hpj&&SearchFile(HelpFile,"|SYSTEM",NULL))
     {
-	my_fread(&SysHdr,sizeof(SysHdr),HelpFile);
+	read_SYSTEMHEADER(&SysHdr,HelpFile);
 	if(SysHdr.Minor==15)
 	{
 	    strcpy(helpcomp,"HC30");
@@ -1700,7 +1700,7 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 						f=my_fopen(ptr+1,"wt");
 						if(f)
 						{
-						    my_fread(&StopHdr,sizeof(StopHdr),HelpFile);
+						    read_STOPHEADER(&StopHdr,HelpFile);
 						    for(n=0;n<StopHdr.BytesUsed;n+=1+strlen(buffer))
 						    {
 							i=getc(HelpFile);
@@ -1748,7 +1748,7 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 			group[i].Name=my_strdup(SysRec->Data);
 			if(groups)
 			{
-			    my_fread(&group[i].GroupHeader,sizeof(group[i].GroupHeader),HelpFile);
+			    read_GROUPHEADER(&group[i].GroupHeader,HelpFile);
 			    if(group[i].GroupHeader.GroupType==2)
 			    {
 				group[i].Bitmap=my_malloc(group[i].GroupHeader.BitmapSize);
@@ -1860,7 +1860,7 @@ BOOL PhraseLoad(FILE *HelpFile)
 
     if(SearchFile(HelpFile,"|PhrIndex",NULL))
     {
-	my_fread(&PhrIndexHdr,sizeof(PhrIndexHdr),HelpFile);
+	read_PHRINDEXHDR(&PhrIndexHdr,HelpFile);
 	SavePos=ftell(HelpFile);
 	if(SearchFile(HelpFile,"|PhrImage",&FileLength))
 	{
@@ -2047,7 +2047,7 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
     if(SearchFile(HelpFile,"|FONT",NULL))
     {
 	FontStart=ftell(HelpFile);
-	my_fread(&FontHdr,sizeof(FontHdr),HelpFile);
+	read_FONTHEADER(&FontHdr,HelpFile);
 	fontnames=FontHdr.NumFacenames;
 	len=(FontHdr.DescriptorsOffset-FontHdr.FacenamesOffset)/fontnames;
 	fontname=my_malloc(fontnames*sizeof(char *));
@@ -2108,7 +2108,7 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
 		*p++='\0';
 		if(SearchFile(HelpFile,CharMap,NULL))
 		{
-		    my_fread(&CharmapHeader,sizeof(CHARMAPHEADER),HelpFile);
+		    read_CHARMAPHEADER(&CharmapHeader,HelpFile);
 		    f=my_fopen(CharMap,"wt");
 		    if(f)
 		    {
@@ -2152,7 +2152,7 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
 	    rounderr=0;
 	    for(i=0;i<FontHdr.NumDescriptors;i++)
 	    {
-		my_fread(&mvbfont,sizeof(mvbfont),HelpFile);
+		read_MVBFONT(&mvbfont,HelpFile);
 		fd=font+i;
 		fd->FontName=mvbfont.FontName;
 		fd->HalfPoints=-2L*mvbfont.Height;
@@ -2171,12 +2171,10 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
 	    }
 	    fseek(HelpFile,FontStart+FontHdr.FormatsOffset,SEEK_SET);
 	    mvbstyle=my_malloc(FontHdr.NumFormats*sizeof(MVBSTYLE));
-	    my_fread(mvbstyle,FontHdr.NumFormats*sizeof(MVBSTYLE),HelpFile);
 	    for(i=0;i<FontHdr.NumFormats;i++)
 	    {
-		MVBSTYLE *m;
-
-		m=mvbstyle+i;
+		MVBSTYLE *m=mvbstyle+i;;
+	    read_MVBSTYLE(m,HelpFile);
 		m->font.FGRGB[0]=AddColor(m->font.FGRGB[0],m->font.FGRGB[1],m->font.FGRGB[2]);
 		m->font.BGRGB[0]=AddColor(m->font.BGRGB[0],m->font.BGRGB[1],m->font.BGRGB[2]);
 	    }
@@ -2187,7 +2185,7 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
 	    rounderr=0;
 	    for(i=0;i<FontHdr.NumDescriptors;i++)
 	    {
-		my_fread(&newfont,sizeof(newfont),HelpFile);
+		read_NEWFONT(&newfont,HelpFile);
 		fd=font+i;
 		fd->Bold=newfont.Weight>500;
 		fd->Italic=newfont.Italic!=0;
@@ -2203,12 +2201,10 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
 	    }
 	    fseek(HelpFile,FontStart+FontHdr.FormatsOffset,SEEK_SET);
 	    newstyle=my_malloc(FontHdr.NumFormats*sizeof(NEWSTYLE));
-	    my_fread(newstyle,FontHdr.NumFormats*sizeof(NEWSTYLE),HelpFile);
 	    for(i=0;i<FontHdr.NumFormats;i++)
 	    {
-		NEWSTYLE *m;
-
-		m=newstyle+i;
+		NEWSTYLE *m=newstyle+i;;
+	    read_NEWSTYLE(m,HelpFile);
 		m->font.FGRGB[0]=AddColor(m->font.FGRGB[0],m->font.FGRGB[1],m->font.FGRGB[2]);
 		m->font.BGRGB[0]=AddColor(m->font.BGRGB[0],m->font.BGRGB[1],m->font.BGRGB[2]);
 	    }
@@ -2219,7 +2215,7 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
 	    rounderr=5;
 	    for(i=0;i<FontHdr.NumDescriptors;i++)
 	    {
-		my_fread(&oldfont,sizeof(oldfont),HelpFile);
+		read_OLDFONT(&oldfont,HelpFile);
 		fd=font+i;
 		fd->Bold=(oldfont.Attributes&FONT_BOLD)!=0;
 		fd->Italic=(oldfont.Attributes&FONT_ITAL)!=0;
@@ -2408,7 +2404,7 @@ long TopicRead(FILE *HelpFile,long TopicPos,void *dest,long NumBytes)
 	{
 	    n=(unsigned int)(TopicFileLength-TopicBlockNum*TopicBlockSize);
 	}
-	my_fread(&TopicBlockHeader,sizeof(TOPICBLOCKHEADER),HelpFile);
+	read_TOPICBLOCKHEADER(&TopicBlockHeader,HelpFile);
 	n-=sizeof(TOPICBLOCKHEADER);
 	if(lzcompressed)
 	{
@@ -2731,7 +2727,7 @@ int ListWindows(FILE *HelpFile,long TopicOffset)
 	    if(n)
 	    {
 		Viola=my_malloc(n*sizeof(VIOLAREC));
-		my_fread(Viola,n*sizeof(VIOLAREC),HelpFile);
+		read_VIOLARECs(Viola,n,HelpFile);
 		i=0;
 		VIOLAfound=1;
 	    }
@@ -2752,7 +2748,7 @@ int ListWindows(FILE *HelpFile,long TopicOffset)
 		    break;
 		}
 		Viola=my_malloc(n*sizeof(VIOLAREC));
-		my_fread(Viola,n*sizeof(VIOLAREC),HelpFile);
+		read_VIOLARECs(Viola,n,HelpFile);
 		i=0;
 	    }
 	    else
@@ -3833,7 +3829,7 @@ void ContextLoad(FILE *HelpFile)
 	    ContextRecs=0;
 	    while(n)
 	    {
-		my_fread(ContextRec+ContextRecs,n*sizeof(CONTEXTREC),HelpFile);
+		read_CONTEXTRECs(ContextRec+ContextRecs,n,HelpFile);
 		ContextRecs+=n;
 		n=GetNextPage(HelpFile,&buf);
 	    }
@@ -3868,7 +3864,7 @@ void GenerateContent(FILE *HelpFile,FILE *ContentFile) /* create a simple Win95 
 	    WindowRec=my_malloc(FileLength*sizeof(VIOLAREC));
 	    while(n)
 	    {
-		my_fread(WindowRec+WindowRecs,n*sizeof(VIOLAREC),HelpFile);
+		read_VIOLARECs(WindowRec+WindowRecs,n,HelpFile);
 		WindowRecs+=n;
 		n=GetNextPage(HelpFile,&buf);
 	    }
@@ -4009,7 +4005,7 @@ void FontDump(FILE *HelpFile)
 
     /* Go to the FONT file and get the headers */
     FileStart=ftell(HelpFile);
-    my_fread(&FontHdr,sizeof(FontHdr),HelpFile);
+    read_FONTHEADER(&FontHdr,HelpFile);
     n=(FontHdr.DescriptorsOffset-FontHdr.FacenamesOffset)/FontHdr.NumFacenames;
     fontname=my_malloc(FontHdr.NumFacenames*sizeof(char *));
     fseek(HelpFile,FileStart+FontHdr.FacenamesOffset,SEEK_SET);
@@ -4026,13 +4022,13 @@ void FontDump(FILE *HelpFile)
     {
 	for(i=0;i<FontHdr.NumDescriptors;i++)
 	{
-	    my_fread(&mvbfont,sizeof(mvbfont),HelpFile);
+	    read_MVBFONT(&mvbfont,HelpFile);
 	    PrintMvbFont(i,&mvbfont);
 	}
 	fseek(HelpFile,FileStart+FontHdr.FormatsOffset,SEEK_SET);
 	for(i=0;i<FontHdr.NumFormats;i++)
 	{
-	    my_fread(&mvbstyle,sizeof(mvbstyle),HelpFile);
+	    read_MVBSTYLE(&mvbstyle,HelpFile);
 	    printf("Style %d",mvbstyle.StyleNum);
 	    if(mvbstyle.BasedOn) printf(" based on %d",mvbstyle.BasedOn);
 	    printf(" named '%s':\n",mvbstyle.StyleName);
@@ -4043,13 +4039,13 @@ void FontDump(FILE *HelpFile)
     {
 	for(i=0;i<FontHdr.NumDescriptors;i++)
 	{
-	    my_fread(&newfont,sizeof(newfont),HelpFile);
+	    read_NEWFONT(&newfont,HelpFile);
 	    PrintNewFont(i,&newfont);
 	}
 	fseek(HelpFile,FileStart+FontHdr.FormatsOffset,SEEK_SET);
 	for(i=0;i<FontHdr.NumFormats;i++)
 	{
-	    my_fread(&newstyle,sizeof(newstyle),HelpFile);
+	    read_NEWSTYLE(&newstyle,HelpFile);
 	    printf("Style %d",newstyle.StyleNum);
 	    if(newstyle.BasedOn) printf(" based on %d",newstyle.BasedOn);
 	    printf(" named '%s':\n",newstyle.StyleName);
@@ -4060,7 +4056,7 @@ void FontDump(FILE *HelpFile)
     {
 	for(i=0;i<FontHdr.NumDescriptors;i++)
 	{
-	    my_fread(&oldfont,sizeof(oldfont),HelpFile);
+	    read_OLDFONT(&oldfont,HelpFile);
 	    printf("%3d: %-32.32s %4d.%d %-6s %02X%02X%02X %02X%02X%02X ",i,fontname[oldfont.FontName],oldfont.HalfPoints/2,(oldfont.HalfPoints&1)*5,FontFamily(oldfont.FontFamily<6?lookup[oldfont.FontFamily]:oldfont.FontFamily),oldfont.FGRGB[2],oldfont.FGRGB[1],oldfont.FGRGB[0],oldfont.BGRGB[2],oldfont.BGRGB[1],oldfont.BGRGB[0]);
 	    if(oldfont.Attributes&FONT_BOLD) putchar('b');
 	    if(oldfont.Attributes&FONT_ITAL) putchar('i');
@@ -4082,7 +4078,7 @@ void PhrImageDump(FILE *HelpFile)
 
     if(SearchFile(HelpFile,"|PhrIndex",NULL))
     {
-	my_fread(&PhrIndexHdr,sizeof(PhrIndexHdr),HelpFile);
+	read_PHRINDEXHDR(&PhrIndexHdr,HelpFile);
 	if(SearchFile(HelpFile,"|PhrImage",&FileLength))
 	{
 	    if(PhrIndexHdr.phrimagesize==PhrIndexHdr.phrimagecompressedsize)
@@ -4183,7 +4179,7 @@ void SysDump(FILE *HelpFile)
     struct tm *TimeRec;
     char *ptr;
 
-    my_fread(&SysHdr,sizeof(SysHdr),HelpFile);
+    read_SYSTEMHEADER(&SysHdr,HelpFile);
     if(SysHdr.Minor==15)
     {
 	ptr="HC30";
@@ -4705,7 +4701,7 @@ void CTXOMAPList(FILE *HelpFile,FILE *hpj) /* write [MAP] section to HPJ file */
 	    fputs("[MAP]\n",hpj);
 	    for(i=0;i<n;i++)
 	    {
-		my_fread(&CTXORec,sizeof(CTXORec),HelpFile);
+		read_CTXOMAPREC(&CTXORec,HelpFile);
 		ptr=TopicName(CTXORec.TopicOffset);
 		if(ptr)
 		{
@@ -5133,7 +5129,7 @@ void ContextList(FILE *HelpFile)
 	if(maprecs)
 	{
 	    map=my_malloc((long)maprecs*sizeof(CTXOMAPREC));
-	    my_fread(map,(long)maprecs*sizeof(CTXOMAPREC),HelpFile);
+	    read_CTXOMAPRECs(map,maprecs,HelpFile);
 	    qsort(map,maprecs,sizeof(CTXOMAPREC),CTXOMAPRecCmp);
 	}
     }
