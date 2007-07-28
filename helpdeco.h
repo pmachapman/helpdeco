@@ -26,6 +26,7 @@ http://www.gnu.org
 #include <malloc.h>
 #include <stdio.h>
 #include <stdarg.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>

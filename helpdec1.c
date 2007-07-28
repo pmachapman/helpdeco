@@ -1056,10 +1056,10 @@ void AnnotationDump(FILE *HelpFile,long FileLength,const char *name)
     putchar('\n');
 }
 
-typedef unsigned char BYTE;
-typedef unsigned short WORD;
-typedef unsigned int DWORD;
-typedef unsigned long long QWORD;
+typedef uint8_t BYTE;
+typedef uint16_t WORD;
+typedef uint32_t DWORD;
+typedef uint64_t QWORD;
 
 inline WORD get_WORD(BYTE* b){
 	return b[0]|b[1]<<8;
