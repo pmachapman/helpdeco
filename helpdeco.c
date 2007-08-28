@@ -2029,8 +2029,10 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
     CHARMAPHEADER CharmapHeader;
     FONTHEADER FontHdr;
     FILE *f;
-    char FontName[33];
-    char CharMap[33];
+    #define FontName_len 33
+    char FontName[FontName_len];
+    #define CharMap_len 33
+    char CharMap[CharMap_len];
     char *ptr;
     char *p;
     long FontStart;
@@ -2050,6 +2052,10 @@ void FontLoad(FILE *HelpFile,FILE *rtf,FILE *hpj)
 	read_FONTHEADER(&FontHdr,HelpFile);
 	fontnames=FontHdr.NumFacenames;
 	len=(FontHdr.DescriptorsOffset-FontHdr.FacenamesOffset)/fontnames;
+       if( len > FontName_len ){
+           fprintf(stderr,"malformed |FONT file\n");
+           exit(1);
+       }
 	fontname=my_malloc(fontnames*sizeof(char *));
 	family=my_malloc(fontnames*sizeof(unsigned char));
 	memset(family,0,fontnames*sizeof(unsigned char));
@@ -3829,6 +3835,10 @@ void ContextLoad(FILE *HelpFile)
 	    ContextRecs=0;
 	    while(n)
 	    {
+               if( ContextRecs+n > entries ){
+                   fprintf(stderr,"malformed |CONTEXT file\n");
+                   exit(1);
+               }
 		read_CONTEXTRECs(ContextRec+ContextRecs,n,HelpFile);
 		ContextRecs+=n;
 		n=GetNextPage(HelpFile,&buf);
@@ -4754,6 +4764,10 @@ void GuessFromKeywords(FILE *HelpFile)
 			my_gets(keyword,sizeof(keyword),HelpFile);
 			m=my_getw(HelpFile);
 			KWDataOffset=getdw(HelpFile);
+                       if( KWDataOffset/4+m > FileLength ){
+                           fprintf(stderr,"malformed keytopic file\n");
+                           exit(1);
+                       }
 			for(j=0;j<m;j++)
 			{
 			    TopicOffset=keytopic[KWDataOffset/4+j];
