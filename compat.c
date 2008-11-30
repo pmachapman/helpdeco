@@ -128,14 +128,14 @@ int memcmpi(
 
 char *strupr(char *s)
 {
-	char *p;
+	char *p = s;
 	while (*p != '\000') *p = toupper(*p), ++p;
 	return s;
 }
 
 char *strlwr(char *s)
 {
-	char *p;
+	char *p = s;
 	while (*p != '\000') *p = tolower(*p), ++p;
 	return s;
 }
