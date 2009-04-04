@@ -55,5 +55,5 @@ dist:
 	tar --gzip --create --file $(distdir).tar.gz $(distdir)
 	-rm -rf $(distdir)
 
-ChangeLog: cvs-user-map
-	cvs2cl --FSF --usermap cvs-user-map
+ChangeLog:
+	git2cl
