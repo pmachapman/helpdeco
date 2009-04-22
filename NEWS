@@ -52,7 +52,7 @@ Version 1.8: used some spare days to clean up the to-do list...
 * handles LANGUAGE, [CHARTAB] and [GROUP] section of media view files
 
 Version 1.7
-* removed unneccessary output statement
+* removed unnecessary output statement
 
 Version 1.6 can now check references to external help files plus:
 * duplicate macro names preceeding picture hotspot info skipped

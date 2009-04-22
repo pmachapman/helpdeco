@@ -21,7 +21,7 @@ http://www.gnu.org
 
 #include "helpdeco.h"
 
-/* neccessary compiler options for 16 bit version using Borland C/C++:
+/* necessary compiler options for 16 bit version using Borland C/C++:
 //   bcc -ml -K -Os -p helpdeco.c helpdec1.c
 // Don't compile using Register Calling Convention in BC3.1: compiler bug.
 // To compile 32 bit version using Microsoft VC4.0 create a new workspace
@@ -2712,7 +2712,7 @@ void ListKeywords(FILE *HelpFile,FILE *rtf,long TopicOffset)
 
 /* create > footnote if topic at TopicOffset has a window assigned to
 // using the |VIOLA internal file. Read VIOLA sequentially, reloading
-// next page only if neccessary, because it is properly ordered. */
+// next page only if necessary, because it is properly ordered. */
 int ListWindows(FILE *HelpFile,long TopicOffset)
 {
     long savepos;
@@ -3146,7 +3146,7 @@ void ListGroups(FILE *rtf,long TopicNum,unsigned long BrowseNum)
 // NextBlock crosses TOPICBLOCKHEADER */
 TOPICOFFSET NextTopicOffset(TOPICOFFSET TopicOffset,TOPICPOS NextBlock,TOPICPOS TopicPos)
 {
-    /* it should never be neccessary to subtract sizeof(TOPICBLOCKHEADER), as no
+    /* it should never be necessary to subtract sizeof(TOPICBLOCKHEADER), as no
     // TOPICLINK may start in the last (12..21) bytes, but just to make shure... */
     if((NextBlock-sizeof(TOPICBLOCKHEADER))/DecompressSize!=(TopicPos-sizeof(TOPICBLOCKHEADER))/DecompressSize)
     {
@@ -4838,7 +4838,7 @@ void FirstPass(FILE *HelpFile)
 		    AddTopic(buffer,FALSE);
 		}
 	    }
-	    guessing=FALSE; /* it's not neccessary to guess context ids if you know them */
+	    guessing=FALSE; /* it's not necessary to guess context ids if you know them */
 	}
     }
     browses=0;
@@ -5809,7 +5809,7 @@ int main(int argc,char *argv[])
 		       "         HELPDECO helpfile[.hlp] \"internalfile\" filename - export internal file\n"
 		       "options: "OPTSTR"y overwrite without warning, "OPTSTR"f list referencing topics, "OPTSTR"x hex dump\n"
 		       "         "OPTSTR"g no guessing, "OPTSTR"hprefix add known contextid prefix, "OPTSTR"n no page breaks\n"
-		       "To recreate all source files neccessary to rebuild a Windows helpfile, create\n"
+		       "To recreate all source files necessary to rebuild a Windows helpfile, create\n"
 		       "a directory, change to this directory and call HELPDECO with the path and name\n"
 		       "of the helpfile to dissect. HELPDECO will extract all files contained in the\n"
 		       "helpfile in two passes and deposit them in the current directory. You may then\n"

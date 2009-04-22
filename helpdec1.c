@@ -588,7 +588,7 @@ BOOL GetBit(FILE *f)
     }
     return (value&mask)!=0L;
 }
-/* output str to RTF file, escaping neccessary characters */
+/* output str to RTF file, escaping necessary characters */
 void putrtf(FILE *rtf,const char *str)
 {
     if(rtf) while(*str)
