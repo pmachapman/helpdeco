@@ -161,7 +161,7 @@ FILE *my_fopen(const char *filename,const char *mode) /* save fopen function */
     return f;
 }
 
-unsigned short my_getw(FILE *f) /* get 16 bit quantity */
+uint16_t my_getw(FILE *f) /* get 16 bit quantity */
 {
     int ch;
 
@@ -169,26 +169,26 @@ unsigned short my_getw(FILE *f) /* get 16 bit quantity */
     return ch|(getc(f)<<8);
 }
 
-unsigned long getdw(FILE *f) /* get long */
+uint32_t getdw(FILE *f) /* get long */
 {
-    unsigned short w;
+    uint16_t w;
 
     w=my_getw(f);
-    return ((unsigned long)my_getw(f)<<16)|(unsigned long)w;
+    return ((uint32_t)my_getw(f)<<16)|(uint32_t)w;
 }
 
-void my_putw(unsigned short w,FILE *f) /* write 16 bit quantity */
+void my_putw(uint16_t w,FILE *f) /* write 16 bit quantity */
 {
     putc((w&0xFF),f);
     putc((w>>8),f);
 }
 
-void putdw(unsigned long x,FILE *f) /* write long to file */
+void putdw(uint32_t x,FILE *f) /* write long to file */
 {
     fwrite(&x,4,1,f);
 }
 
-void putcdw(unsigned long x,FILE *f) /* write compressed long to file */
+void putcdw(uint32_t x,FILE *f) /* write compressed long to file */
 {
     if(x>32767L)
     {
@@ -319,33 +319,33 @@ int GetWord(MFILE *f) /* read 16 bit value from memory mapped file or regular fi
     unsigned char b;
 
     b=f->get(f);
-    return ((unsigned short)(f->get(f))<<8)|(unsigned short)b;
+    return ((uint16_t)(f->get(f))<<8)|(uint16_t)b;
 }
 
-unsigned short GetCWord(MFILE *f) /* get compressed word from memory mapped file or regular file */
+uint16_t GetCWord(MFILE *f) /* get compressed word from memory mapped file or regular file */
 {
     unsigned char b;
 
     b=f->get(f);
-    if(b&1) return (((unsigned short)(f->get(f))<<8)|(unsigned short)b)>>1;
-    return ((unsigned short)b>>1);
+    if(b&1) return (((uint16_t)(f->get(f))<<8)|(uint16_t)b)>>1;
+    return ((uint16_t)b>>1);
 }
 
-unsigned long GetCDWord(MFILE *f) /* get compressed long from memory mapped file or regular file */
+uint32_t GetCDWord(MFILE *f) /* get compressed long from memory mapped file or regular file */
 {
-    unsigned short w;
+    uint16_t w;
 
     w=GetWord(f);
-    if(w&1) return (((unsigned long)GetWord(f)<<16)|(unsigned long)w)>>1;
-    return ((unsigned long)w>>1);
+    if(w&1) return (((uint32_t)GetWord(f)<<16)|(uint32_t)w)>>1;
+    return ((uint32_t)w>>1);
 }
 
-unsigned long GetDWord(MFILE *f) /* get long from memory mapped file or regular file */
+uint32_t GetDWord(MFILE *f) /* get long from memory mapped file or regular file */
 {
-    unsigned short w;
+    uint16_t w;
 
     w=GetWord(f);
-    return ((unsigned long)GetWord(f)<<16)|(unsigned long)w;
+    return ((uint32_t)GetWord(f)<<16)|(uint32_t)w;
 }
 
 size_t StringRead(char *ptr,size_t size,MFILE *f) /* read nul terminated string from memory mapped or regular file */
@@ -570,8 +570,8 @@ char *PrintString(const char *str,unsigned int len)
 /* important to read longs to stop at right position */
 BOOL GetBit(FILE *f)
 {
-    static unsigned long mask;
-    static unsigned long value;
+    static uint32_t mask;
+    static uint32_t value;
 
     if(f)
     {
@@ -610,12 +610,12 @@ void putrtf(FILE *rtf,const char *str)
 }
 
 /* scan-functions for reading compressed values from LinkData1 */
-short scanint(char **ptr) /* scan a compressed short */
+int16_t scanint(char **ptr) /* scan a compressed short */
 {
-    short ret;
+    int16_t ret;
     if(*(*ptr)&1) {
-        ret = (*(((unsigned short *)(*ptr)))>>1)-0x4000;
-        *ptr = ((unsigned short *)*ptr)+1;
+        ret = (*(((uint16_t *)(*ptr)))>>1)-0x4000;
+        *ptr = ((uint16_t *)*ptr)+1;
     } else {
         ret = (*(((unsigned char *)(*ptr)))>>1)-0x40;
         *ptr=((unsigned char *)*ptr)+1;
@@ -623,12 +623,12 @@ short scanint(char **ptr) /* scan a compressed short */
     return ret;
 }
 
-unsigned short scanword(char **ptr) /* scan a compressed unsiged short */
+uint16_t scanword(char **ptr) /* scan a compressed unsiged short */
 {
-    short ret;
+    uint16_t ret;
     if(*(*ptr)&1) {
-        ret = (*(((unsigned short *)(*ptr)))>>1);
-        *ptr=((unsigned short *)*ptr)+1;
+        ret = (*(((uint16_t *)(*ptr)))>>1);
+        *ptr=((uint16_t *)*ptr)+1;
     } else {
         ret = (*(((unsigned char *)(*ptr)))>>1);
         *ptr=((unsigned char *)*ptr)+1;
@@ -636,15 +636,15 @@ unsigned short scanword(char **ptr) /* scan a compressed unsiged short */
     return ret;
 }
 
-long scanlong(char **ptr)  /* scan a compressed long */
+uint32_t scanlong(char **ptr)  /* scan a compressed long */
 {
-    long ret;
+    uint32_t ret;
     if(*(*ptr)&1) {
-        ret = (*(((unsigned long *)(*ptr)))>>1)-0x40000000L;
-        *ptr=((unsigned long *)*ptr)+1;
+        ret = (*(((uint32_t *)(*ptr)))>>1)-0x40000000L;
+        *ptr=((uint32_t *)*ptr)+1;
     } else {
-        ret = (*(((unsigned short *)(*ptr)))>>1)-0x4000;
-        *ptr=((unsigned short *)*ptr)+1;
+        ret = (*(((uint16_t *)(*ptr)))>>1)-0x4000;
+        *ptr=((uint16_t *)*ptr)+1;
     }
     return ret;
 }
@@ -709,7 +709,7 @@ BOOL SearchFile(FILE *HelpFile,const char *FileName,long *FileLength)
 // Number of TotalBtreeEntries stored in TotalEntries if pointer is
 // not NULL, NumberOfEntries of first B+ tree page returned.
 // buf stores position, so GetNextPage will seek to position itself. */
-short GetFirstPage(FILE *HelpFile,BUFFER *buf,long *TotalEntries)
+int16_t GetFirstPage(FILE *HelpFile,BUFFER *buf,long *TotalEntries)
 {
     int CurrLevel;
     BTREEHEADER BTreeHdr;
@@ -731,7 +731,7 @@ short GetFirstPage(FILE *HelpFile,BUFFER *buf,long *TotalEntries)
     return CurrNode.NEntries;
 }
 
-short GetNextPage(FILE *HelpFile,BUFFER *buf) /* walk Btree */
+int16_t GetNextPage(FILE *HelpFile,BUFFER *buf) /* walk Btree */
 {
     BTREENODEHEADER CurrNode;
 
@@ -986,7 +986,7 @@ void GroupDump(FILE *HelpFile)
 
 void KWMapDump(FILE *HelpFile)
 {
-    unsigned short n,i;
+    uint16_t n,i;
     KWMAPREC KeywordMap;
 
     n=my_getw(HelpFile);
@@ -1022,7 +1022,7 @@ void CatalogDump(FILE *HelpFile)
 void CTXOMAPDump(FILE *HelpFile)
 {
     CTXOMAPREC CTXORec;
-    unsigned short n,i;
+    uint16_t n,i;
 
     n=my_getw(HelpFile);
     for(i=0;i<n;i++)

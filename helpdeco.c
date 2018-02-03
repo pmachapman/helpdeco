@@ -50,7 +50,7 @@ BOOL before31,after31;
 BOOL win95;
 BOOL mvp,multi;
 BOOL warnings,missing;
-long *Topic;
+int32_t *Topic;
 int Topics;			    /* 16 bit: max. 16348 Topics */
 GROUP *group;
 int groups;
@@ -130,9 +130,9 @@ char *prefix[]={"","idh_","helpid_",NULL,NULL,NULL,NULL,NULL};
 long prefixhash[sizeof(prefix)/sizeof(prefix[0])];
 FONTDESCRIPTOR CurrentFont;
 
-long hash(char *name) /* convert 3.1/'95 topic name to hash value */
+int32_t hash(char *name) /* convert 3.1/'95 topic name to hash value */
 {
-    long hash;
+    int32_t hash;
     unsigned char *ptr;
 
     if(*name=='\0') return 1L;
@@ -143,11 +143,11 @@ long hash(char *name) /* convert 3.1/'95 topic name to hash value */
     return hash;
 }
 
-char *unhash(unsigned long hash) /* deliver 3.1 context id that fits hash value */
+char *unhash(uint32_t hash) /* deliver 3.1 context id that fits hash value */
 {
     static char buffer[15];
-    int i,j,k;
-    unsigned long hashlo,divlo,result,mask;
+    int32_t i,j,k;
+    uint32_t hashlo,divlo,result,mask;
     unsigned char hashhi,divhi;
     char ch;
 
@@ -156,11 +156,11 @@ char *unhash(unsigned long hash) /* deliver 3.1 context id that fits hash value 
     while(i<j)
     {
 	k=(i+j)/2;
-	if(hashrec[k].hash<(long)hash)
+	if(hashrec[k].hash<(int32_t)hash)
 	{
 	    i=k+1;
 	}
-	else if(hashrec[k].hash>(long)hash)
+	else if(hashrec[k].hash>(int32_t)hash)
 	{
 	    j=k;
 	}
@@ -189,7 +189,7 @@ char *unhash(unsigned long hash) /* deliver 3.1 context id that fits hash value 
 		if(divhi&1) divlo|=0x80000000UL;
 		divhi>>=1;
 	    }
-	    ch=untable[(int)hashlo];
+	    ch=untable[(int32_t)hashlo];
 	    if(!ch) break;
 	    buffer[--j]=ch;
 	    if(result==0) return buffer+j;
@@ -202,7 +202,7 @@ char *unhash(unsigned long hash) /* deliver 3.1 context id that fits hash value 
     return buffer;
 }
 
-char *ContextId(unsigned long hash) /* unhash and verify for legal entry point */
+char *ContextId(uint32_t hash) /* unhash and verify for legal entry point */
 {
     char *ptr;
     int i;
@@ -221,7 +221,7 @@ char *ContextId(unsigned long hash) /* unhash and verify for legal entry point *
 
 void AddTopic(char *TopicName,BOOL derived) /* adds a known topic name to hash decode list */
 {
-    long x;
+    int32_t x;
     int i,j,k;
 
     x=hash(TopicName);
@@ -272,7 +272,7 @@ void AddTopic(char *TopicName,BOOL derived) /* adds a known topic name to hash d
 /* ContextRec is sorted by TopicOffset. Binary search for an entry for
 // TopicOffset topic. If more than one entry with identical TopicOffset
 // is stored, return index of the first one, if not found return -1 */
-int FindContext(long topic)
+int FindContext(int32_t topic)
 {
     int i,lwb,upb;
 
@@ -330,10 +330,10 @@ int FindString(unsigned char *buf,int buflen,unsigned char *str,int len)
 // And if it doesn't derive a context id, don't bother, unhash delivers
 // one matching the hash code. This code is just to please the user.
 // Win95 allows for nearly every char to be used as a context ident. */
-BOOL Derive(unsigned char *str,unsigned long desiredhash,char *buffer)
+BOOL Derive(unsigned char *str,uint32_t desiredhash,char *buffer)
 {
     int i,j,k,l,m,n,o,p,s;
-    unsigned long hash,h,x,y;
+    uint32_t hash,h,x,y;
     char *ptr;
     unsigned char ch;
 
@@ -418,7 +418,7 @@ BOOL Derive(unsigned char *str,unsigned long desiredhash,char *buffer)
 void Guess(char *str,TOPICOFFSET topic)
 {
     int i,j,k,m;
-    long hash;
+    int32_t hash;
 
     i=FindContext(topic);
     if(i!=-1) /* iff there is a # footnote assigned to that topic offset */
@@ -621,7 +621,7 @@ int filenamecmp(const char *a,const char *b)
 }
 
 /* store external reference in list, checked later */
-void StoreReference(char *filename,int type,char *id,long hash)
+void StoreReference(char *filename,int type,char *id,int32_t hash)
 {
     CHECKREC *ptr;
     FILEREF *ref;
@@ -1028,9 +1028,9 @@ int ExtractBitmap(char *szFilename,MFILE *f)
     BITMAPFILEHEADER bmfh;
     BITMAPINFOHEADER bmih;
     APMFILEHEADER afh;
-    unsigned short *wp;
-    unsigned short wMagic,mapmode,colors;
-    unsigned long dwRawSize,dwDataSize,dwHotspotOffset,dwOffsBitmap,dwHotspotSize,dwPictureOffset,xPels,yPels;
+    uint16_t *wp;
+    uint16_t wMagic,mapmode,colors;
+    uint32_t dwRawSize,dwDataSize,dwHotspotOffset,dwOffsBitmap,dwHotspotSize,dwPictureOffset,xPels,yPels;
 
     FileStart=f->tell(f);
     wMagic=GetWord(f);
@@ -1068,7 +1068,7 @@ int ExtractBitmap(char *szFilename,MFILE *f)
 	    bmih.biWidth=GetCDWord(f);
 	    bmih.biHeight=GetCDWord(f);
 	    colors=(int)(bmih.biClrUsed=GetCDWord(f));
-	    if(!colors) colors=(unsigned short)1<<bmih.biBitCount;
+	    if(!colors) colors=(uint16_t)1<<bmih.biBitCount;
 	    bmih.biClrImportant=GetCDWord(f);
 	    if(after31&&bmih.biClrImportant==1) type|=0x20; /* contains transparent bitmap */
 	    dwDataSize=GetCDWord(f);
@@ -1160,7 +1160,7 @@ int ExtractBitmap(char *szFilename,MFILE *f)
 		if(checkexternal) break;
 		afh.dwKey=0x9AC6CDD7L;
 		afh.wInch=2540;
-		wp=(unsigned short *)&afh;
+		wp=(uint16_t *)&afh;
 		for(i=0;i<10;i++) afh.wChecksum^=*wp++;
 		strcat(szFilename,".wmf");
 		fTarget=my_fopen(szFilename,"wb");
@@ -1247,7 +1247,7 @@ int ExtractBitmap(char *szFilename,MFILE *f)
 	    else
 	    {
 		unsigned int hotspots,n,j,l;
-		unsigned long MacroDataSize;
+		uint32_t MacroDataSize;
 		char *ptr;
 		HOTSPOT *hotspot;
 
@@ -1420,7 +1420,7 @@ void ExportBitmaps(FILE *HelpFile) /* export all bitmaps */
     }
 }
 
-char *TopicName(long topic)
+char *TopicName(int32_t topic)
 {
     static char name[20];
     int i;
@@ -1539,7 +1539,7 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 		    if(SysRec->Data[0]) fprintf(hpj,"COPYRIGHT=%s\n",SysRec->Data);
 		    break;
 		case 0x0003:
-		    ptr=TopicName(*(long *)SysRec->Data);
+		    ptr=TopicName(*(int32_t *)SysRec->Data);
 		    if(ptr) fprintf(hpj,"CONTENTS=%s\n",ptr);
 		    break;
 		case 0x0004:
@@ -1561,7 +1561,7 @@ void SysList(FILE *HelpFile,FILE *hpj,char *IconFileName)
 		    if(SysRec->Data[0]) fprintf(hpj,"CITATION=%s\n",SysRec->Data);
 		    break;
 		case 0x0009:
-		    if(!mvp) fprintf(hpj,"LCID=0x%X 0x%X 0x%X\n",*(short *)(SysRec->Data+8),*(short *)SysRec->Data,*(short *)(SysRec->Data+2));
+		    if(!mvp) fprintf(hpj,"LCID=0x%X 0x%X 0x%X\n",*(int16_t *)(SysRec->Data+8),*(int16_t *)SysRec->Data,*(int16_t *)(SysRec->Data+2));
 		    break;
 		case 0x000A:
 		    if(!mvp&&SysRec->Data[0]) fprintf(hpj,"CNT=%s\n",SysRec->Data);
@@ -1912,8 +1912,8 @@ BOOL PhraseLoad(FILE *HelpFile)
 	{
 	    if(before31)
 	    {
-		offset=(PhraseCount+1)*sizeof(short);
-		FileLength-=(PhraseCount+1)*sizeof(short)+4;
+		offset=(PhraseCount+1)*sizeof(int16_t);
+		FileLength-=(PhraseCount+1)*sizeof(int16_t)+4;
 		l=FileLength;
 	    }
 	    else
@@ -1922,13 +1922,13 @@ BOOL PhraseLoad(FILE *HelpFile)
 		if(newphrases)
 		{
 		    my_fread(&junk,sizeof(junk),HelpFile);
-		    offset=(PhraseCount+1)*sizeof(short);
-		    FileLength-=(PhraseCount+1)*sizeof(short)+sizeof(junk)+10;
+		    offset=(PhraseCount+1)*sizeof(int16_t);
+		    FileLength-=(PhraseCount+1)*sizeof(int16_t)+sizeof(junk)+10;
 		}
 		else
 		{
-		    offset=(PhraseCount+1)*sizeof(short);
-		    FileLength-=(PhraseCount+1)*sizeof(short)+8;
+		    offset=(PhraseCount+1)*sizeof(int16_t);
+		    FileLength-=(PhraseCount+1)*sizeof(int16_t)+8;
 		}
 	    }
 	    PhraseOffsets=my_malloc(sizeof(unsigned int)*(PhraseCount+1));
@@ -2580,7 +2580,7 @@ void Annotate(long pos,FILE *rtf)
 // updates NextKeywordOffset, clears NextKeywordRec, sets KeywordRecs. */
 void CollectKeywords(FILE *HelpFile)
 {
-    unsigned short j,m;
+    uint16_t j,m;
     int i,n,k,l,map;
     long FileLength,savepos,KWDataOffset,from;
     long *keytopic;
@@ -2911,10 +2911,10 @@ void BackLinkBrowse(long TopicOffset,long OtherTopicOffset,long NextTopic,long P
     }
 }
 
-unsigned long AddLink(long StartTopic,long NextTopic,long PrevTopic)
+uint32_t AddLink(long StartTopic,long NextTopic,long PrevTopic)
 {
     int i,j;
-    unsigned long result;
+    uint32_t result;
 
     result=0L;
     for(i=0;i<browses;i++) if(browse[i].StartTopic==-1L) break;
@@ -2938,10 +2938,10 @@ unsigned long AddLink(long StartTopic,long NextTopic,long PrevTopic)
     return result;
 }
 
-unsigned long MergeLink(long TopicOffset,long OtherTopicOffset,long NextTopic,long PrevTopic)
+uint32_t MergeLink(long TopicOffset,long OtherTopicOffset,long NextTopic,long PrevTopic)
 {
     int i,j;
-    unsigned long result;
+    uint32_t result;
 
     result=0L;
     for(i=0;i<browses;i++) if(browse[i].StartTopic!=-1L)
@@ -2974,10 +2974,10 @@ unsigned long MergeLink(long TopicOffset,long OtherTopicOffset,long NextTopic,lo
     return result;
 }
 
-unsigned long LinkLink(long TopicOffset,long OtherTopicOffset,long NextTopic,long PrevTopic)
+uint32_t LinkLink(long TopicOffset,long OtherTopicOffset,long NextTopic,long PrevTopic)
 {
     int i;
-    unsigned long result;
+    uint32_t result;
 
     result=0L;
     for(i=0;i<browses;i++) if(browse[i].StartTopic!=-1L)
@@ -3002,10 +3002,10 @@ unsigned long LinkLink(long TopicOffset,long OtherTopicOffset,long NextTopic,lon
     return result;
 }
 
-unsigned long BackLinkLink(long TopicOffset,long OtherTopicOffset,long NextTopic,long PrevTopic)
+uint32_t BackLinkLink(long TopicOffset,long OtherTopicOffset,long NextTopic,long PrevTopic)
 {
     int i;
-    unsigned long result;
+    uint32_t result;
 
     result=0L;
     for(i=0;i<browses;i++) if(browse[i].StartTopic!=-1L)
@@ -3113,7 +3113,7 @@ void ChangeFont(FILE *rtf,unsigned int i,BOOL ul,BOOL uldb)
 
 /* list all groups the topic TopicNum is assigned to and/or emit footnote
 // for browse sequence of this topic as + footnote into rtf file */
-void ListGroups(FILE *rtf,long TopicNum,unsigned long BrowseNum)
+void ListGroups(FILE *rtf,long TopicNum,uint32_t BrowseNum)
 {
     int i;
     BOOL grouplisted;
@@ -3126,7 +3126,7 @@ void ListGroups(FILE *rtf,long TopicNum,unsigned long BrowseNum)
 	    if(!grouplisted)
 	    {
 		fputs("{\\up +}{\\footnote\\pard\\plain{\\up +} ",rtf);
-		if(BrowseNum) fprintf(rtf,"BROWSE%04x:%04x",(unsigned short)BrowseNum,(unsigned short)(BrowseNum>>16));
+		if(BrowseNum) fprintf(rtf,"BROWSE%04x:%04x",(uint16_t)BrowseNum,(uint16_t)(BrowseNum>>16));
 		grouplisted=TRUE;
 	    }
 	    fprintf(rtf,";%s",group[i].Name);
@@ -3138,7 +3138,7 @@ void ListGroups(FILE *rtf,long TopicNum,unsigned long BrowseNum)
     }
     else if(BrowseNum)
     {
-	fprintf(rtf,"{\\up +}{\\footnote\\pard\\plain{\\up +} BROWSE%04x:%04x}\n",(unsigned short)BrowseNum,(unsigned short)(BrowseNum>>16));
+	fprintf(rtf,"{\\up +}{\\footnote\\pard\\plain{\\up +} BROWSE%04x:%04x}\n",(uint16_t)BrowseNum,(uint16_t)(BrowseNum>>16));
     }
 }
 
@@ -3166,7 +3166,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
     char *LinkData2;  /* Second set of data */
     int fontset,i;
     int NextContextRec;
-    unsigned long BrowseNum;
+    uint32_t BrowseNum;
     char *hotspot;
     char *arg;
     BOOL firsttopic=TRUE;
@@ -3174,9 +3174,9 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
     int nextbitmap,TopicInRTF,NumberOfRTF;
     long TopicNum,TopicOffset,TopicPos;
     int col,cols,lastcol;
-    short *iptr;
-    unsigned short x1,x2,x3;
-    short y1;
+    int16_t *iptr;
+    uint16_t x1,x2,x3;
+    int16_t y1;
     long l1;
     char *ptr;
     char *cmd;
@@ -3369,7 +3369,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 		    {
 		    case 0:
 		    case 2:
-			l1=*(short *)ptr; /* min table width */
+			l1=*(int16_t *)ptr; /* min table width */
 			ptr+=2;
 			fputs("\\trqc",rtf);
 			break;
@@ -3378,7 +3378,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 			l1=32767L;
 			break;
 		    }
-		    iptr=(short *)ptr;
+		    iptr=(int16_t *)ptr;
 		    if(cols>1)
 		    {
 			x1=iptr[0]+iptr[1]+iptr[3]/2;
@@ -3398,18 +3398,18 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 		}
 		lastcol=-1;
 		str=LinkData2;
-		for(col=0;(TopicLink.RecordType==TL_TABLE?*(short *)ptr!=-1:col==0)&&ptr<LinkData1+TopicLink.DataLen1-sizeof(TOPICLINK);col++)
+		for(col=0;(TopicLink.RecordType==TL_TABLE?*(int16_t *)ptr!=-1:col==0)&&ptr<LinkData1+TopicLink.DataLen1-sizeof(TOPICLINK);col++)
 		{
 		    fputs("\\pard",rtf);
 		    if(TopicPos<nonscroll) fputs("\\keepn",rtf);
 		    if(TopicLink.RecordType==TL_TABLE)
 		    {
 			fputs("\\intbl",rtf);
-			lastcol=*(short *)ptr;
+			lastcol=*(int16_t *)ptr;
 			ptr+=5;
 		    }
 		    ptr+=4;
-		    x2=*(unsigned short *)ptr;
+		    x2=*(uint16_t *)ptr;
 		    ptr+=2;
 		    if(x2&0x1000) fputs("\\keep",rtf);
 		    if(x2&0x0400) fputs("\\qr",rtf);
@@ -3516,9 +3516,9 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 			    ptr+=5;
 			    break;
 			case 0x21: /* dtype MVB */
-			    if(*(short *)(ptr+1))
+			    if(*(int16_t *)(ptr+1))
 			    {
-				fprintf(rtf,"\\{dtype%d\\}",*(short *)(ptr+1));
+				fprintf(rtf,"\\{dtype%d\\}",*(int16_t *)(ptr+1));
 			    }
 			    else
 			    {
@@ -3527,7 +3527,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 			    ptr+=3;
 			    break;
 			case 0x80: /* font change */
-			    ChangeFont(rtf,fontset=*(short *)(ptr+1),ul,uldb);
+			    ChangeFont(rtf,fontset=*(int16_t *)(ptr+1),ul,uldb);
 			    ptr+=3;
 			    break;
 			case 0x81:
@@ -3541,11 +3541,11 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 				{
 				    fputs("\n\\par\\intbl ",rtf);
 				}
-				else if(*(short *)(ptr+2)==-1)
+				else if(*(int16_t *)(ptr+2)==-1)
 				{
 				    fputs("\\cell\\intbl\\row\n",rtf);
 				}
-				else if(*(short *)(ptr+2)==lastcol)
+				else if(*(int16_t *)(ptr+2)==lastcol)
 				{
 				    fputs("\\par\\pard ",rtf);
 				}
@@ -3588,7 +3588,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 				if(ActualTopicOffset>MaxTopicOffset) ActualTopicOffset=MaxTopicOffset;
 				/* fall thru */
 			    case 0x03: /* HC30 */
-				x1=((unsigned short *)ptr)[0];
+				x1=((uint16_t *)ptr)[0];
 				switch(x1)
 				{
 				case 1:
@@ -3601,7 +3601,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 				    x2=nextbitmap++;
 				    goto other;
 				case 0:
-				    x2=((unsigned short *)ptr)[1];
+				    x2=((uint16_t *)ptr)[1];
 				other:
 				    if(makertf)
 				    {
@@ -3690,7 +3690,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 				hotspot=my_realloc(hotspot,strlen(ptr+3)+2);
 				sprintf(hotspot,"!%s",ptr+3);
 			    }
-			    ptr+=*(short *)(ptr+1)+3;
+			    ptr+=*(int16_t *)(ptr+1)+3;
 			    break;
 			case 0xCC: /* macro without font change */
 			    ChangeFont(rtf,fontset,FALSE,uldb=TRUE);
@@ -3699,7 +3699,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 				hotspot=my_realloc(hotspot,strlen(ptr+3)+3);
 				sprintf(hotspot,"%%!%s",ptr+3);
 			    }
-			    ptr+=*(short *)(ptr+1)+3;
+			    ptr+=*(int16_t *)(ptr+1)+3;
 			    break;
 			case 0xE0: /* popup jump HC30 */
 			    ChangeFont(rtf,fontset,ul=TRUE,FALSE);
@@ -3781,7 +3781,7 @@ FILE *TopicDump(FILE *HelpFile,FILE *rtf,FILE *hpj,BOOL makertf)
 				    break;
 				}
 			    }
-			    ptr+=*(short *)(ptr+1)+3;
+			    ptr+=*(int16_t *)(ptr+1)+3;
 			    break;
 			case 0x8B:
 			    fputs("\\~",rtf);
@@ -3915,7 +3915,7 @@ void ListRose(FILE *HelpFile,FILE *hpj)
     unsigned char *ptr;
     long *keytopic;
     int n,i,l,e;
-    unsigned short j,count;
+    uint16_t j,count;
     BUFFER buf,buf2;
 
     if(SearchFile(HelpFile,"|Rose",NULL))
@@ -4265,7 +4265,7 @@ void SysDump(FILE *HelpFile)
 	    printf("CITATION=%s\n",SysRec->Data);
 	    break;
 	case 0x0009:
-	    if(!mvp) printf("LCID=0x%X 0x%X 0x%X\n",*(short *)(SysRec->Data+8),*(short *)SysRec->Data,*(short *)(SysRec->Data+2));
+	    if(!mvp) printf("LCID=0x%X 0x%X 0x%X\n",*(int16_t *)(SysRec->Data+8),*(int16_t *)SysRec->Data,*(int16_t *)(SysRec->Data+2));
 	    break;
 	case 0x000A:
 	    if(!mvp) printf("CNT=%s\n",SysRec->Data);
@@ -4326,10 +4326,10 @@ void DumpTopic(FILE *HelpFile,long TopicPos)
     char *str;
     char *cmd;
     long l;
-    unsigned short x1,x2;
+    uint16_t x1,x2;
     unsigned char b;
     int cols,col;
-    short i;
+    int16_t i;
     char *LinkData1;
     char *LinkData2;
     long TopicNum;
@@ -4405,7 +4405,7 @@ void DumpTopic(FILE *HelpFile,long TopicPos)
 		{
 		case 0:
 		case 2:
-		    printf("minwidth=%d ",*(short *)ptr);
+		    printf("minwidth=%d ",*(int16_t *)ptr);
 		    ptr+=2;
 		case 1:
 		case 3:
@@ -4415,23 +4415,23 @@ void DumpTopic(FILE *HelpFile,long TopicPos)
 		}
 		for(col=0;col<cols;col++)
 		{
-		    printf("width=%d gap=%d ",*(short *)ptr,*(short *)(ptr+2));
+		    printf("width=%d gap=%d ",*(int16_t *)ptr,*(int16_t *)(ptr+2));
 		    ptr+=4;
 		}
 	    }
 	    putchar('\n');
 	    str=LinkData2;
-	    for(col=0;(TopicLink.RecordType==TL_TABLE?*(short *)ptr!=-1:col==0)&&ptr<LinkData1+TopicLink.DataLen1-sizeof(TOPICLINK);col++)
+	    for(col=0;(TopicLink.RecordType==TL_TABLE?*(int16_t *)ptr!=-1:col==0)&&ptr<LinkData1+TopicLink.DataLen1-sizeof(TOPICLINK);col++)
 	    {
 		if(TopicLink.RecordType==TL_TABLE)
 		{
-		    printf("column=%d %04x %d ",*(short *)ptr,*(unsigned short *)(ptr+2),*(unsigned char *)(ptr+4)-0x80);
+		    printf("column=%d %04x %d ",*(int16_t *)ptr,*(uint16_t *)(ptr+2),*(unsigned char *)(ptr+4)-0x80);
 		    ptr+=5;
 		}
-		printf("%02x %d id=%04x ",*(unsigned char *)ptr,*(unsigned char *)(ptr+1)-0x80,*(unsigned short *)(ptr+2));
+		printf("%02x %d id=%04x ",*(unsigned char *)ptr,*(unsigned char *)(ptr+1)-0x80,*(uint16_t *)(ptr+2));
 		ptr+=4;
-		x2=*((unsigned short *)ptr);
-		ptr=((unsigned short *)ptr)+1;
+		x2=*((uint16_t *)ptr);
+		ptr=((uint16_t *)ptr)+1;
 		if(x2&0x0001) printf("unknownbit01=%ld ",scanlong(&ptr)); /* found in MVBs, purpose unknown, may mean that x2 is compressed long */
 		if(x2&0x0002) printf("topspacing=%d ",scanint(&ptr));
 		if(x2&0x0004) printf("bottomspacing=%d ",scanint(&ptr));
@@ -4451,8 +4451,8 @@ void DumpTopic(FILE *HelpFile,long TopicPos)
 		    if(x1&0x20) fputs("thickborder ",stdout);
 		    if(x1&0x40) fputs("doubleborder ",stdout);
 		    if(x1&0x80) fputs("unknownborder",stdout);
-			printf("%04x ",*((unsigned short *)ptr));
-			ptr=(unsigned short*)ptr+1;
+			printf("%04x ",*((uint16_t *)ptr));
+			ptr=(uint16_t*)ptr+1;
 		}
 		if(x2&0x0200)
 		{
@@ -4502,11 +4502,11 @@ void DumpTopic(FILE *HelpFile,long TopicPos)
 			ptr+=5;
 			break;
 		    case 0x21:
-			printf("{dtype%d}",*(short *)(ptr+1));
+			printf("{dtype%d}",*(int16_t *)(ptr+1));
 			ptr+=3;
 			break;
 		    case 0x80: /* font change */
-			printf("[font=%u]",*(short *)(ptr+1));
+			printf("[font=%u]",*(int16_t *)(ptr+1));
 			ptr+=3;
 			break;
 		    case 0x81:
@@ -4544,7 +4544,7 @@ void DumpTopic(FILE *HelpFile,long TopicPos)
 			    x1=scanword(&ptr);
 			    printf("hotspots=%u ",x1);
 			case 0x03: /* HC30 */
-			    switch(*(unsigned short *)ptr)
+			    switch(*(uint16_t *)ptr)
 			    {
 			    case 0:
 				fputs("baggage ",stdout);
@@ -4553,14 +4553,14 @@ void DumpTopic(FILE *HelpFile,long TopicPos)
 				fputs("embedded ",stdout);
 				break;
 			    default:
-				error("Unknown %04x",((unsigned short *)ptr)[0]);
+				error("Unknown %04x",((uint16_t *)ptr)[0]);
 			    }
-			    printf("bm%u]",((unsigned short *)ptr)[1]);
+			    printf("bm%u]",((uint16_t *)ptr)[1]);
 			    break;
 			case 0x05:
-			    printf("%04x ",((unsigned short *)ptr)[0]);
-			    printf("%04x ",((unsigned short *)ptr)[1]);
-			    printf("%04x ",((unsigned short *)ptr)[2]);
+			    printf("%04x ",((uint16_t *)ptr)[0]);
+			    printf("%04x ",((uint16_t *)ptr)[1]);
+			    printf("%04x ",((uint16_t *)ptr)[2]);
 			    printf("%s]",ptr+6);
 			    break;
 			default:
@@ -4582,11 +4582,11 @@ void DumpTopic(FILE *HelpFile,long TopicPos)
 			break;
 		    case 0xC8: /* macro */
 			printf("[!%s]",ptr+3);
-			ptr+=*(short *)(ptr+1)+3;
+			ptr+=*(int16_t *)(ptr+1)+3;
 			break;
 		    case 0xCC: /* macro without font change */
 			printf("[*!%s]",ptr+3);
-			ptr+=*(short *)(ptr+1)+3;
+			ptr+=*(int16_t *)(ptr+1)+3;
 			break;
 		    case 0xE0: /* Popup HC30 */
 			printf("[^TOPIC%ld]",*(long *)(ptr+1));
@@ -4640,10 +4640,10 @@ void DumpTopic(FILE *HelpFile,long TopicPos)
 			    break;
 			default:
 			    putchar('[');
-			    for(i=0;i<*(short *)(ptr+1);i++) printf("%02x",(unsigned char)ptr[i]);
+			    for(i=0;i<*(int16_t *)(ptr+1);i++) printf("%02x",(unsigned char)ptr[i]);
 			    putchar(']');
 			}
-			ptr+=*(short *)(ptr+1)+3;
+			ptr+=*(int16_t *)(ptr+1)+3;
 			break;
 		    default:
 			printf("[%02x]",(unsigned char)*ptr++);
@@ -4699,7 +4699,7 @@ void AliasList(FILE *hpj) /* write [ALIAS] section to HPJ file */
 void CTXOMAPList(FILE *HelpFile,FILE *hpj) /* write [MAP] section to HPJ file */
 {
     CTXOMAPREC CTXORec;
-    unsigned short n,i;
+    uint16_t n,i;
     char *ptr;
 
     if(SearchFile(HelpFile,"|CTXOMAP",NULL))
@@ -4813,8 +4813,8 @@ void FirstPass(FILE *HelpFile)
     TOPICHEADER30 *TopicHdr30;
     TOPICHEADER *TopicHdr;
     char filename[20];
-    unsigned short x1,x2;
-    short y1;
+    uint16_t x1,x2;
+    int16_t y1;
     MFILE *f;
 
     if(extractmacros)
@@ -4983,11 +4983,11 @@ void FirstPass(FILE *HelpFile)
 		}
 		ptr+=4*cols;
 	    }
-	    for(col=0;(TopicLink.RecordType==TL_TABLE?*(short *)ptr!=-1:col==0)&&ptr<LinkData1+TopicLink.DataLen1-sizeof(TOPICLINK);col++)
+	    for(col=0;(TopicLink.RecordType==TL_TABLE?*(int16_t *)ptr!=-1:col==0)&&ptr<LinkData1+TopicLink.DataLen1-sizeof(TOPICLINK);col++)
 	    {
 		if(TopicLink.RecordType==TL_TABLE) ptr+=5;
 		ptr+=4;
-		x2=*(unsigned short *)ptr;
+		x2=*(uint16_t *)ptr;
 		ptr+=2;
 		if(x2&0x0001) scanlong(&ptr); /* found in MVBs, purpose */
 		/* unknown, may mean that x2 is really compressed long */
@@ -5036,7 +5036,7 @@ void FirstPass(FILE *HelpFile)
 			    x1=scanword(&ptr);
 			    /* fall thru */
 			case 0x03: /* HC30 */
-			    switch(((unsigned short *)ptr)[0])
+			    switch(((uint16_t *)ptr)[0])
 			    {
 			    case 1:
 				for(x2=1;x2<extensions;x2++) if(!extension[x2]) break;
@@ -5065,7 +5065,7 @@ void FirstPass(FILE *HelpFile)
 		    case 0xC8: /* macro */
 		    case 0xCC: /* macro without font change */
 			CheckMacro(ptr+3);
-			ptr+=*(short *)(ptr+1)+3;
+			ptr+=*(int16_t *)(ptr+1)+3;
 			break;
 		    case 0x20: /* vfld (MVC) */
 		    case 0xE0: /* popup jump HC30 */
@@ -5094,7 +5094,7 @@ void FirstPass(FILE *HelpFile)
 			default:
 			    error("Unknown modifier %02x in tag %02x",(unsigned char)ptr[3],(unsigned char)ptr[0]);
 			}
-			ptr+=*(short *)(ptr+1)+3;
+			ptr+=*(int16_t *)(ptr+1)+3;
 			break;
 		    default:
 			error("Unknown %02x",*(unsigned char *)ptr);
@@ -5126,7 +5126,7 @@ int CTXOMAPRecCmp(const void *a,const void *b)
 
 void ContextList(FILE *HelpFile)
 {
-    unsigned short maprecs,m;
+    uint16_t maprecs,m;
     int j,window,len;
     BOOL morekeywords;
     CTXOMAPREC *map;
