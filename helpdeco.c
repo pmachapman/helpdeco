@@ -5794,7 +5794,7 @@ int main(int argc,char *argv[])
     }
     else
     {
-	fprintf(stderr,"HELPDECO - decompile *.HLP/*.MVB files of Windows 3.x / 95 - %d bit Version 2.1.3\n"
+	fprintf(stderr,"HELPDECO - decompile *.HLP/*.MVB files of Windows 3.x / 95 - %d bit Version 2.1.4\n"
 		       "M.Winterhoff <mawin@gmx.net>, Geschw.-Scholl-Ring 17, 38444 Wolfsburg, Germany\n"
 		       "\n"
 		       "usage:   HELPDECO helpfile[.hlp]    ["OPTSTR"y]  - decompile helpfile into all sources\n"

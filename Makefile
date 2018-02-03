@@ -17,7 +17,7 @@
 # http://www.gnu.org
 
 prefix = /usr/local
-distdir = helpdeco-2.1.3
+distdir = helpdeco-2.1.4
 files = \
 	compat.c compat.h \
 	helpdec1.c helpdeco.c helpdeco.h \
