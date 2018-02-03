@@ -1077,16 +1077,16 @@ extern QWORD get_QWORD(BYTE* b){
 BOOL read_##a(a* obj, FILE* file){ \
 	BYTE buf[sizeof_##a]; \
 	if( my_fread(buf,sizeof_##a,file) ){ \
-		uint i = 0;
+		uint32_t i = 0;
 #define s2(a,b) \
 BOOL read_##a##_to_##b(b* obj, FILE* file){ \
 	BYTE buf[sizeof_##a]; \
 	if( my_fread(buf,sizeof_##a,file) ){ \
-		uint i = 0;
+		uint32_t i = 0;
 #define g(a) \
 BOOL get_##a(a* obj, BYTE* buf){ \
 	if( 1 ){ \
-		uint i = 0;
+		uint32_t i = 0;
 #define a(a,b) \
 	memcpy(&obj->a[0],buf+i,b); i+=b;
 #define b(a) \
@@ -1205,7 +1205,7 @@ BOOL read_CTXOMAPRECs(CTXOMAPREC*objs,int n,FILE*file){
 }
 
 s(STOPHEADER)
-uint j = 0;
+uint32_t j = 0;
 d(Magic)
 w(BytesUsed)
 while(j<17){ w(Unused[j++]) }
@@ -1242,7 +1242,7 @@ w(CharmapsOffset)
 e
 
 s(CHARMAPHEADER)
-uint j = 0;
+uint32_t j = 0;
 w(Magic)
 w(Size)
 w(Unknown1)
