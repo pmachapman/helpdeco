@@ -49,19 +49,19 @@ Displays usage
 HELPDECO helpfilename
 Decompiles help file into all sources needed for a rebuild. All files are
 created in current directory (should be empty). Existing files will be
-overwritten without asking if option /y was specified.
+overwritten without asking if option -y was specified.
 
 Options may be appended to the command, separated using blanks, as follows:
 
-/m
+-m
 May be used to stop parsing macros for topic names. Help compiler will emit
 Warning 4131.
 
-/b
+-b
 May be used to stop resolving browse sequences. Help source file than
 contains no + footnotes.
 
-/g
+-g
 Turns off time consuming guessing of context names. Applicable when
 HELPDECO reports 'no context ids found' or when you are not interested in
 legible context ids. This doesn't affect functionality.
@@ -70,61 +70,61 @@ and keywords. This may produce good results on some help files and no result
 at all on others, depending on autoring tool used or working method of help
 author.
 
-/i
+-i
 If you want to see which context ids are guessed by HELPDECO...
 
-/hprefix
+-hprefix
 HELPDECO tries to guess context ids from topic titles and keywords, possibly
 prefixed by idh_ or helpid_. If the help file was created using other
-prefixes, they may be added to the table using the /h prefix option.
+prefixes, they may be added to the table using the -h prefix option.
 
-/a [annotationfilename.ANN]
+-a [annotationfilename.ANN]
 Adds all annotations from annotationfile as annotations of user ANN into
 RTF file. Default annotationfilename is helpfilename.ANN.
 
-/s n
+-s n
 Splits output every n pages into a separate RTF file. For example
-  HELPDECO helpdemo /s 100
+  HELPDECO helpdemo -s 100
 decompiles helpdeco.hlp and creates different RTF files helpdem1.rtf,
 helpdem2.rtf,.. each containing no more than 100 topics.
 
-HELPDECO helpfilename /r
+HELPDECO helpfilename -r
 Converts help file into RTF file of same appearance if loaded into WinWord
 as if displayed by WinHelp. To print or work with complete content. Specify
-additional option /n, if no page breaks should separate topics.
+additional option -n, if no page breaks should separate topics.
 
-HELPDECO helpfilename /c
+HELPDECO helpfilename -c
 Generates a *.CNT file used by WinHlp32, containing all chapters that have
 titles assigned in the order they appear in the helpfile. This file should
 then be edited using HCW 4.00 or any text editor into a hierarchical order.
 
-HELPDECO helpfilename /e
+HELPDECO helpfilename -e
 Lists all references to external help files.
 
-HELPDECO helpfilename /e /f
+HELPDECO helpfilename -e -f
 Lists all references to external help files and titles of topics that
 contained these references.
 
-HELPDECO helpfilename /p
+HELPDECO helpfilename -p
 Checks references to external help files. Referenced help file need to be
 available to HELPDECO. This call doesn't produce any new files and doesn't
 modify existing files. Errors are reported to stdout (screen).
 
-HELPDECO helpfilename /d
+HELPDECO helpfilename -d
 Displays internal directory of help file. You may supply a *.MVB,*.M??,
 *.ANN,*.CAC,*.AUX file instead of a *.HLP file.
 
-HELPDECO helpfilename /x
+HELPDECO helpfilename -x
 Displays hex dump of internal directory
 
 HELPDECO helpfilename "internalfilename"
 Displays internal file in appropriate format if known, else hex dump. You
 may redirect output into a file using >outfile.
 
-HELPDECO helpfilename "internalfilename" /x
+HELPDECO helpfilename "internalfilename" -x
 Displays hex dump of internal file
 
-HELPDECO helpfilename "internalfilename" /x /t offset
+HELPDECO helpfilename "internalfilename" -x -t offset
 Displays hex dump of internal file starting at offset, which may be
 specified in decimal or preceeded with 0x in hex.
 

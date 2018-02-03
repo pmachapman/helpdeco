@@ -49,23 +49,23 @@ Zeigt Benutzungshinweise
 HELPDECO helpfilename
 Zerlegt die Hilfedatei in alle zum erneuten Zusammenbau benötigten Dateien.
 Diese Dateien werden im aktuellen (möglichst leeren) Verzeichnis abgelegt.
-Existierende Dateien werden ohne Rückfrage überschrieben wenn die Option /y
+Existierende Dateien werden ohne Rückfrage überschrieben wenn die Option -y
 angegeben wird.
 
 Hinter dem Kommando können durch Leerzeichen abgesetzte Optionen angeben
 werden:
 
-/m
+-m
 kann verwendet werden, um das Durchsuchen von macros nach Topicnamen zu
 verhindern, wenn dabei Probleme auftreten. Hilfecompiler wird Warnung 4131
 melden.
 
-/b
+-b
 kann verwendet werden, um das Auflösen von Browse-Sequenzen zu verhindern,
 wenn dabei Probleme auftreten. Hilfequelltextdatei enthält dann keine +
 Fußnoten.
 
-/g
+-g
 Schaltet das zeitintensive Raten von Kontextnamen aus. Anzuwenden wenn
 HELPDECO 'no context ids found' meldet oder man nicht an lesbaren
 Kontextnamen interessiert ist. Die Funktionsweise von HELPDECO wird dadurch
@@ -75,57 +75,57 @@ die Kontextnamen zu rekonstruieren, was bei einigen Hilfedateien sehr gut,
 bei anderen gar nicht funktioniert, je nach Hilfedateierstellungswerkzeug
 oder Arbeitsmethode des Hilfeautors.
 
-/i
+-i
 Wenn man sehen möchte, welche Kontextnamen HELPDECO errät...
 
-/hprefix
+-hprefix
 HELPDECO versucht aus Kapitelüberschriften und Schlüsselwörtern Kontextnamen
 zu erraten, wobei auch idh_ oder helpid_ vorangestellt werden.
 Wenn die Hilfedatei mit anderen bekannten Prefixen erstellt wurde, kann
-die Tabelle durch die Option /h prefix erweitert werden.
+die Tabelle durch die Option -h prefix erweitert werden.
 
-/a [annotationfilename.ANN]
+-a [annotationfilename.ANN]
 Fügt zusätzlich alle Anmerkungen aus der angegebenen Anmerkungsdatei als
 Anmerkungen des Benutzers ANN in die RTF-Datei ein. Fehlt der annotation-
 filename, verwendet HELPDECO helpfilename.ANN dafür.
 
-/s n
+-s n
 Zerteilt die Ausgabe alle n Seiten in eine eigene RTF Datei, z.B. zerlegt
-  HELPDECO helpdemo /s 100
+  HELPDECO helpdemo -s 100
 die Datei helpdemo.hlp und erzeugt RTF-Dateien mit den Namen helpdem1.rtf,
 helpdem2.rtf,.. die jeweils höchstens 100 Seiten enthalten.
 
-HELPDECO helpfilename /r
+HELPDECO helpfilename -r
 Erzeugt aus der Hilfedatei eine RTF-Datei, die von WinWord geladen dasselbe
 Aussehen hat wie die von WinHelp angezeigten Hilfeseiten. Damit kann eine
 Hilfedatei komplett gedruckt oder weiterverarbeitet werden. Zusätzlich
-Option /n angeben, wenn an Kapitelgrenzen kein Seitenwechsel stattfinden soll.
+Option -n angeben, wenn an Kapitelgrenzen kein Seitenwechsel stattfinden soll.
 
-HELPDECO helpfilename /c
+HELPDECO helpfilename -c
 Erzeugt aus der Hilfedatei eine *.CNT-Datei für WinHlp32, die alle Kapitel
 mit Überschriften in der Reihenfolge enthält, in der sie in der Hilfedatei
 auftreten. Die Datei muß dann mit HCW 4.00 oder einem Texteditor in eine
 hierarchische Struktur überarbeitet werden.
 
-HELPDECO helpfilename /e
+HELPDECO helpfilename -e
 Zeigt alle Referenzen auf externe Hilfedateien.
 
-HELPDECO helpfilename /e /f
+HELPDECO helpfilename -e -f
 Zeigt alle Referenzen auf externe Hilfedateien und die Titel der Topics in
 denen sie auftraten.
 
-HELPDECO helpfilename /p
+HELPDECO helpfilename -p
 Prüft Referenzen auf externe Hilfedateien. Die referenzierten Hilfedateien
 müssen für HELPDECO zugreifbar sein. Dieser Aufruf erzeugt keine neuen
 Dateien und modifiziert keine existierenden. Fehler werden auf stdout (den
 Bildschirm) geschrieben.
 
-HELPDECO helpfilename /d
+HELPDECO helpfilename -d
 Zeigt das interne Inhaltsverzeichnis der Hilfedatei. Es kann auch eine
 *.MVB,*.M??,*.ANN,*.CAC,*.AUX Datei anstelle der *.HLP-Datei angegeben
 werden.
 
-HELPDECO helpfilename /x
+HELPDECO helpfilename -x
 Zeigt das interne Inhaltsverzeichnis als HexDump
 
 HELPDECO helpfilename "internalfilename"
@@ -133,10 +133,10 @@ Zeigt die genannte interne Datei in einem passenden Format an, soweit die
 interne Datei anzeigbar ist, sonst als HexDump. Sie können die Ausgabe in
 eine Datei umleiten durch anhängen von >outfile.
 
-HELPDECO helpfilename "internalfilename" /x
+HELPDECO helpfilename "internalfilename" -x
 Zeigt die genannte interne Datei als HexDump
 
-HELPDECO helpfilename "internalfilename" /x /t offset
+HELPDECO helpfilename "internalfilename" -x -t offset
 Zeigt die genannte interne Datei als HexDump beginnend bei Position
 offset, der als Dezimalzahl oder mit vorangestelltem 0x als Hexadezimal-
 zahl akzeptiert wird.
