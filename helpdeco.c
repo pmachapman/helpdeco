@@ -3851,7 +3851,7 @@ void ContextLoad(FILE *HelpFile)
     {
 	Topic=my_malloc(entries);
 	my_fread(Topic,entries,HelpFile);
-	Topics=(int)(entries/sizeof(long));
+	Topics=(int)(entries/sizeof(int32_t));
     }
 }
 
