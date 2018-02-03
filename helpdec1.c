@@ -1061,15 +1061,15 @@ typedef uint16_t WORD;
 typedef uint32_t DWORD;
 typedef uint64_t QWORD;
 
-inline WORD get_WORD(BYTE* b){
+extern WORD get_WORD(BYTE* b){
 	return b[0]|b[1]<<8;
 }
 
-inline DWORD get_DWORD(BYTE* b){
+extern DWORD get_DWORD(BYTE* b){
 	return b[0]|b[1]<<8|b[2]<<16|b[3]<<24;
 }
 
-inline QWORD get_QWORD(BYTE* b){
+extern QWORD get_QWORD(BYTE* b){
 	return b[0]|b[1]<<8|b[2]<<16|b[3]<<24|(QWORD)b[4]<<32|(QWORD)b[5]<<40|(QWORD)b[6]<<48|(QWORD)b[7]<<56;
 }
 
