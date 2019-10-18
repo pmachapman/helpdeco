@@ -18,6 +18,7 @@
 
 prefix = /usr/local
 distdir = helpdeco-2.1.4
+vpath = ../src
 files = \
 	compat.c compat.h \
 	helpdec1.c helpdeco.c helpdeco.h \
