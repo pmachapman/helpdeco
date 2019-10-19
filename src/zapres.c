@@ -36,9 +36,15 @@ will not rescale the image and MRBC can be applied to specify a new resolution.
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/types.h>
+#ifndef _WIN32
 #include <sys/dir.h>
+#endif
 #include <string.h>
+#ifdef _WIN32
+#include "helper.h"
+#else
 #include "compat.h"
+#endif
 
 int backup(FILE *f,char *oldname)
 {

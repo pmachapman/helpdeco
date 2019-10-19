@@ -26,11 +26,17 @@ http://www.gnu.org
 #include <malloc.h>
 #include <stdio.h>
 #include <stdarg.h>
+#ifndef _WIN32
 #include <stdint.h>
+#endif
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
+#ifdef _WIN32
+#include "helper.h"
+#else
 #include "compat.h"
+#endif
 
 #ifdef __TURBOC__
 typedef struct { char a,b,c; } align;

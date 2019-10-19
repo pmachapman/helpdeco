@@ -33,10 +33,15 @@ n is a digit from 0 to 9). Discarded hotspot info will be written to stdout.
 #include <sys/types.h>
 #include <stdio.h>
 #include <string.h>
+#ifndef _WIN32
 #include <stdint.h>
+#endif
 #include <stdlib.h>
 #include <assert.h>
 #include <limits.h>
+#ifdef _WIN32
+#include "helper.h"
+#endif
 
 typedef enum {FALSE,TRUE} BOOL;
 
@@ -233,7 +238,7 @@ int GetPackedByte(FILE *f) // RulLen decompression
     return value;
 }
 
-#if defined(__GNUC__) && __GNUC__ >= 3
+#if (defined(__GNUC__) && __GNUC__ >= 3) || defined(__BORLANDC__)
 #pragma pack (push, 1)
 #endif
 typedef struct
@@ -246,7 +251,7 @@ typedef struct
 __attribute__((packed))
 #endif
      ;
-#if defined(__GNUC__) && __GNUC__ >= 3
+#if defined(__GNUC__) && __GNUC__ >= 3 || defined(__BORLANDC__)
 #pragma pack (pop)
 #endif
 
@@ -262,7 +267,7 @@ void PrintHotspotInfo(FILE *f)
 	n=getw(f);
 	if(n>0)
 	{
-	    hotspot=malloc(n*sizeof(HOTSPOT));
+	    hotspot=(HOTSPOT*)malloc(n*sizeof(HOTSPOT));
 	    if(hotspot)
 	    {
 		l=getw(f); // macro data size
