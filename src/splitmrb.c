@@ -242,7 +242,7 @@ int GetPackedByte(FILE *f) // RulLen decompression
     return value;
 }
 
-#if (defined(__GNUC__) && __GNUC__ >= 3) || defined(__BORLANDC__)
+#if (defined(__GNUC__) && __GNUC__ >= 3) || defined(__BORLANDC__) || defined(_MSC_VER)
 #pragma pack (push, 1)
 #endif
 typedef struct
@@ -255,7 +255,7 @@ typedef struct
 __attribute__((packed))
 #endif
      ;
-#if defined(__GNUC__) && __GNUC__ >= 3 || defined(__BORLANDC__)
+#if defined(__GNUC__) && __GNUC__ >= 3 || defined(__BORLANDC__) || defined(_MSC_VER)
 #pragma pack (pop)
 #endif
 
