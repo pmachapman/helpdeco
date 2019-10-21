@@ -1,10 +1,10 @@
 CC = bcc32
-CFLAGS = -P -O2 -w
+CFLAGS = -O2
 
 all: helpdeco splitmrb zapres
 
 helpdeco:
-		$(CC) $(CFLAGS) ../src/helpdec1.c ../src/helpdeco.c
+		$(CC) $(CFLAGS) ../src/helpdeco.c ../src/helpdec1.c
 
 splitmrb:
 		$(CC) $(CFLAGS) ../src/splitmrb.c

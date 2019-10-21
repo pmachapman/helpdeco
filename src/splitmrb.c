@@ -267,7 +267,7 @@ void PrintHotspotInfo(FILE *f)
 	n=getw(f);
 	if(n>0)
 	{
-	    hotspot=(HOTSPOT*)malloc(n*sizeof(HOTSPOT));
+	    hotspot=malloc(n*sizeof(HOTSPOT));
 	    if(hotspot)
 	    {
 		l=getw(f); // macro data size
