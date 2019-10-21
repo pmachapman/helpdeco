@@ -30,6 +30,10 @@ Output files are created in the current directory using resolution-dependent
 extensions *.EGA,*.VGA,*.CGA,*.854,*.MAC or *.BMP,*.WMF or *.Snn,*.nnn (where
 n is a digit from 0 to 9). Discarded hotspot info will be written to stdout.
 */
+
+#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_NONSTDC_NO_WARNINGS
+
 #include <sys/types.h>
 #include <stdio.h>
 #include <string.h>

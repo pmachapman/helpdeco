@@ -18,6 +18,9 @@ Inc., 59 Temple Place, Suite 330, Boston, MA, 02111-1307, USA or visit:
 http://www.gnu.org
 */
 
+#define _CRT_SECURE_NO_WARNINGS
+#define _CRT_NONSTDC_NO_WARNINGS
+
 /* HELPDEC1.C - HELPDECO supporting functions */
 #include "helpdeco.h"
 

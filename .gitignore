@@ -1,4 +1,8 @@
+.vs
 .vscode
+Debug
+Release
 *.exe
 *.obj
 *.tds
+*.user
