@@ -20,22 +20,39 @@ prefix = /usr/local
 distdir = helpdeco-2.1.4
 vpath = ../src
 files = \
-	compat.c compat.h \
-	helpdec1.c helpdeco.c helpdeco.h \
-	splitmrb.c zapres.c \
-	Makefile \
-	helpfile.txt NEWS README README.de ChangeLog
+        ../src/compat.c \
+        ../src/compat.h \
+        ../src/helpdec1.c \
+        ../src/helpdeco.c \
+        ../src/helpdeco.h \
+        ../src/splitmrb.c \
+        ../src/zapres.c \
+        Makefile \
+        ../helpfile.txt \
+        ../NEWS \
+        ../README \
+        ../README.de \
+        ../ChangeLog
 
+CC=gcc
 CFLAGS+=-Wall
+LDFLAGS+=-s
+
+all: build
 
 build: helpdeco splitmrb zapres
 
-helpdeco: helpdeco.o helpdec1.o compat.o
+helpdeco: ../src/helpdeco.o ../src/helpdec1.o ../src/compat.o
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
-zapres: zapres.o compat.o
+splitmrb: ../src/splitmrb.o ../src/compat.o
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
+
+zapres: ../src/zapres.o ../src/compat.o
+	$(CC) $(CFLAGS) $^ -o $@ $(LDFLAGS)
 
 clean:
-	rm -f *.o helpdeco zapres splitmrb
+	rm -f ../src/*.o helpdeco zapres splitmrb
 
 install: build
 	-mkdir $(prefix) $(prefix)/bin $(prefix)/share $(prefix)/share/doc $(prefix)/share/doc/helpdeco
