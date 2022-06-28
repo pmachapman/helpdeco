@@ -32,7 +32,8 @@ files = \
         ../NEWS \
         ../README \
         ../README.de \
-        ../ChangeLog
+        ../LICENSE \
+        ../TODO
 
 CC=gcc
 CFLAGS+=-Wall
@@ -61,13 +62,13 @@ install: build
 
 dist:
 	-rm -rf $(distdir)
-	mkdir $(distdir)
+	mkdir -p $(distdir)/src
 	for file in $(files); do \
 	  if test -d $$file; then \
-	    cp -p --recursive $$file $(distdir)/$$file; \
+	    cp -p --recursive $$file $(distdir)/src/$$file; \
 	  else \
 	    test -f $(distdir)/$$file \
-	    || cp -p $$file $(distdir)/$$file; \
+	    || cp -p $$file $(distdir)/src/$$file; \
 	  fi; \
 	done
 	tar --gzip --create --file $(distdir).tar.gz $(distdir)
