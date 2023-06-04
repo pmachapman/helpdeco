@@ -1,8 +1,14 @@
 .vs
 .vscode
+.DS_Store
 Debug
 Release
+xcuserdata
 *.exe
+*.o
 *.obj
 *.tds
 *.user
+*/helpdeco
+*/splitmrb
+*/zapres

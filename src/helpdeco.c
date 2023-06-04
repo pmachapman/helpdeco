@@ -61,7 +61,7 @@ CONTEXTREC *ContextRec;
 int ContextRecs;		    /* 16 bit: max. 8191 Context Records */
 ALTERNATIVE *alternative;
 int alternatives;
-BOOL overwrite=FALSE;
+BOOL overwriteFile=FALSE;
 BOOL exportLZ77=FALSE;
 BOOL extractmacros=TRUE;
 BOOL guessing=TRUE;
@@ -5734,7 +5734,7 @@ int main(int argc,char *argv[])
 		mode=1;
 		break;
 	    case 'y':
-		overwrite=TRUE;
+		overwriteFile=TRUE;
 		break;
 	    case 'z':
 		exportLZ77=TRUE;

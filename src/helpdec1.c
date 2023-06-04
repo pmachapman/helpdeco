@@ -133,7 +133,7 @@ FILE *my_fopen(const char *filename,const char *mode) /* save fopen function */
     FILE *f;
     char ch;
 
-    if(!overwrite)
+    if(!overwriteFile)
     {
 	f=fopen(filename,"rb");
 	if(f)
@@ -148,7 +148,7 @@ FILE *my_fopen(const char *filename,const char *mode) /* save fopen function */
 	    while(ch!='Q'&&ch!='A'&&ch!='Y'&&ch!='N');
 	    printf("%c\n",ch);
 	    if(ch=='Q') exit(0);
-	    if(ch=='A') overwrite=TRUE;
+	    if(ch=='A') overwriteFile=TRUE;
 	    if(ch=='N') return NULL;
 	}
     }

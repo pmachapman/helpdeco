@@ -23,7 +23,12 @@ http://www.gnu.org
 #ifndef HELPDECO_H
 #define HELPDECO_H
 #include <time.h>
+#ifdef __APPLE__
+#define HAVE_STRNCPY
+#define HAVE_STRLCPY
+#else
 #include <malloc.h>
+#endif  
 #include <stdio.h>
 #include <stdarg.h>
 #ifndef _WIN32
@@ -754,5 +759,5 @@ extern void CTXOMAPDump(FILE *HelpFile);
 extern void LinkDump(FILE *HelpFile);
 extern void AnnotationDump(FILE *HelpFile,long FileLength,const char *name);
 
-extern BOOL overwrite; /* ugly: declared in HELPDECO.C */
+extern BOOL overwriteFile; /* ugly: declared in HELPDECO.C */
 #endif
