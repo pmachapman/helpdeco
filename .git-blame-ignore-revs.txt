@@ -1,0 +1,3 @@
+# .git-blame-ignore-revs
+# Reformatted Source Code
+645c0aa59229d3a14584ac50965f315f834853ef

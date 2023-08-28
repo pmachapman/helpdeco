@@ -969,7 +969,7 @@ void ToMapDump(FILE* HelpFile, long FileLength)
 void GroupDump(FILE* HelpFile)
 {
 	GROUPHEADER GroupHeader;
-	char* ptr;
+	char* ptr = NULL;
 	unsigned long i;
 
 	read_GROUPHEADER(&GroupHeader, HelpFile);

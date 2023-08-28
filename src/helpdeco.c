@@ -5129,7 +5129,7 @@ void ContextList(FILE* HelpFile)
 	uint16_t maprecs, m;
 	int j, window, len;
 	BOOL morekeywords;
-	CTXOMAPREC* map;
+	CTXOMAPREC* map = NULL;
 	char filename[13];
 	TOPICLINK TopicLink;
 	char* LinkData1;
