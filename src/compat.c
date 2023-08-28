@@ -29,14 +29,14 @@ http://www.gnu.org
 #include "compat.h"
 
 void _splitpath(
-	const char *path,
-	char *drive,
-	char *dir,
-	char *file,
-	char *ext)
+	const char* path,
+	char* drive,
+	char* dir,
+	char* file,
+	char* ext)
 {
-	char *p;
-	char *t;
+	char* p;
+	char* t;
 
 	if (path == NULL)
 		return;
@@ -55,7 +55,8 @@ void _splitpath(
 		t = strrchr(basename(p), '.');
 		if (t == NULL) {
 			strcpy(ext, "");
-		} else {
+		}
+		else {
 			strncpy(ext, t, _MAX_EXT);
 		}
 		free(p);
@@ -75,11 +76,11 @@ void _splitpath(
 }
 
 void _makepath(
-	char *path,
-	const char *drive,
-	const char *dir,
-	const char *file,
-	const char *ext)
+	char* path,
+	const char* drive,
+	const char* dir,
+	const char* file,
+	const char* ext)
 {
 	snprintf(path, PATH_MAX, "%s%s/%s%s",
 		drive,
@@ -92,30 +93,30 @@ void _makepath(
 int getch(void)
 {
 	int retval;
-        struct termios stored_settings;
-        struct termios new_settings;
-        
-        tcgetattr(0, &stored_settings);
-        new_settings = stored_settings;
-        new_settings.c_lflag &= (~(ECHO|ICANON));
-        new_settings.c_cc[VTIME] = 0;
-        new_settings.c_cc[VMIN] = 1;
-        tcsetattr(0, TCSANOW, &new_settings);
+	struct termios stored_settings;
+	struct termios new_settings;
+
+	tcgetattr(0, &stored_settings);
+	new_settings = stored_settings;
+	new_settings.c_lflag &= (~(ECHO | ICANON));
+	new_settings.c_cc[VTIME] = 0;
+	new_settings.c_cc[VMIN] = 1;
+	tcsetattr(0, TCSANOW, &new_settings);
 
 	retval = getchar();
 
-        tcsetattr(0, TCSANOW, &stored_settings);
+	tcsetattr(0, TCSANOW, &stored_settings);
 
 	return retval;
 }
 
 int memcmpi(
-	const void *s1,
-	const void *s2,
+	const void* s1,
+	const void* s2,
 	size_t len)
 {
-	char *p1 = strdup(s1);
-	char *p2 = strdup(s2);
+	char* p1 = strdup(s1);
+	char* p2 = strdup(s2);
 	int i;
 
 	for (i = 0; i < len; i++) {
@@ -128,16 +129,16 @@ int memcmpi(
 	return i;
 }
 
-char *strupr(char *s)
+char* strupr(char* s)
 {
-	char *p = s;
+	char* p = s;
 	while (*p != '\000') *p = toupper(*p), ++p;
 	return s;
 }
 
-char *strlwr(char *s)
+char* strlwr(char* s)
 {
-	char *p = s;
+	char* p = s;
 	while (*p != '\000') *p = tolower(*p), ++p;
 	return s;
 }

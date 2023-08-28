@@ -35,10 +35,10 @@ http://www.gnu.org
 #define _MAX_DRIVE 3
 #endif
 
-void _splitpath(const char *, char *, char *, char *, char *);
-void _makepath(char *, const char *, const char *, const char *, const char *);
+void _splitpath(const char*, char*, char*, char*, char*);
+void _makepath(char*, const char*, const char*, const char*, const char*);
 int getch(void);
-int memcmpi(const void *, const void *, size_t);
-char *strupr(char *);
-char *strlwr(char *);
+int memcmpi(const void*, const void*, size_t);
+char* strupr(char*);
+char* strlwr(char*);
 #endif

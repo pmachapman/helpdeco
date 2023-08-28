@@ -1,5 +1,5 @@
 /*
-    Helper types and constants for helpdeco
+	Helper types and constants for helpdeco
 */
 
 #ifndef int16_t
