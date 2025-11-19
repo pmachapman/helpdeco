@@ -5761,7 +5761,7 @@ int main(int argc, char* argv[])
 	{
 		_splitpath(filename, drive, dir, name, ext);
 		if (ext[0] == '\0') strcpy(ext, ".hlp");
-		mvp = ext[1] == 'M';
+		mvp = (ext[1] == 'M') || (ext[1] == 'm');
 		_makepath(HelpFileName, drive, dir, name, ext);
 		f = fopen(HelpFileName, "rb");
 		if (f)
