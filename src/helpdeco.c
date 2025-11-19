@@ -1383,7 +1383,7 @@ void ExportBitmaps(FILE* HelpFile) /* export all bitmaps */
 	BUFFER buf;
 	MFILE* mf;
 	char* leader;
-	char FileName[20];
+	char FileName[128];
 	long FileLength;
 	int i, num, n, type;
 	long savepos;
