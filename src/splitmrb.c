@@ -264,7 +264,7 @@ void PrintHotspotInfo(FILE* f)
 	int i, l, n;
 	HOTSPOT* hotspot;
 	char name[80];
-	char buffer[128];
+	char buffer[NAME_MAX];
 
 	if (getc(f) == 1)
 	{

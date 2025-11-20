@@ -1383,7 +1383,7 @@ void ExportBitmaps(FILE* HelpFile) /* export all bitmaps */
 	BUFFER buf;
 	MFILE* mf;
 	char* leader;
-	char FileName[128];
+	char FileName[NAME_MAX];
 	long FileLength;
 	int i, num, n, type;
 	long savepos;
@@ -3866,6 +3866,7 @@ void GenerateContent(FILE* HelpFile, FILE* ContentFile) /* create a simple Win95
 	fprintf(ContentFile, ":Base %s%s>main\n", name, ext);
 	if (HelpFileTitle[0]) fprintf(ContentFile, ":Title %s\n", HelpFileTitle);
 	WindowRecs = 0;
+	WindowRec = NULL;
 	if (SearchFile(HelpFile, "|VIOLA", NULL))
 	{
 		n = GetFirstPage(HelpFile, &buf, &FileLength);
