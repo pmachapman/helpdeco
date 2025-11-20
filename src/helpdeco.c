@@ -1383,7 +1383,7 @@ void ExportBitmaps(FILE* HelpFile) /* export all bitmaps */
 	BUFFER buf;
 	MFILE* mf;
 	char* leader;
-	char FileName[20];
+	char FileName[128];
 	long FileLength;
 	int i, num, n, type;
 	long savepos;
@@ -5761,7 +5761,7 @@ int main(int argc, char* argv[])
 	{
 		_splitpath(filename, drive, dir, name, ext);
 		if (ext[0] == '\0') strcpy(ext, ".hlp");
-		mvp = ext[1] == 'M';
+		mvp = toupper(ext[1]) == 'M';
 		_makepath(HelpFileName, drive, dir, name, ext);
 		f = fopen(HelpFileName, "rb");
 		if (f)

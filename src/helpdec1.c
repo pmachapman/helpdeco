@@ -665,7 +665,7 @@ BOOL SearchFile(FILE* HelpFile, const char* FileName, long* FileLength)
 	BTREEHEADER BtreeHdr;
 	BTREENODEHEADER CurrNode;
 	long offset;
-	char TempFile[19];
+	char TempFile[128];
 	int i, n;
 
 	fseek(HelpFile, 0L, SEEK_SET);
@@ -815,7 +815,7 @@ void ListBaggage(FILE* HelpFile, FILE* hpj, BOOL before31) /* writes out [BAGGAG
 {
 	BOOL headerwritten;
 	char* leader;
-	char FileName[20];
+	char FileName[128];
 	long FileLength;
 	BUFFER buf;
 	int i, n;
