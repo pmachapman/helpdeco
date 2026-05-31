@@ -2052,7 +2052,15 @@ void FontLoad(FILE* HelpFile, FILE* rtf, FILE* hpj)
 		FontStart = ftell(HelpFile);
 		read_FONTHEADER(&FontHdr, HelpFile);
 		fontnames = FontHdr.NumFacenames;
-		len = (FontHdr.DescriptorsOffset - FontHdr.FacenamesOffset) / fontnames;
+		if (fontnames)
+		{
+			len = (FontHdr.DescriptorsOffset - FontHdr.FacenamesOffset) / fontnames;
+		}
+		else
+		{
+			len = 0;
+			fontnames = 1;
+		}
 		if (len > FontName_len) {
 			fprintf(stderr, "malformed |FONT file\n");
 			exit(1);
@@ -2063,8 +2071,13 @@ void FontLoad(FILE* HelpFile, FILE* rtf, FILE* hpj)
 		charmap = FALSE;
 		mvbstyle = NULL;
 		newstyle = NULL;
+		if (FontHdr.NumFacenames == 0)
+		{
+			fontname[0] = my_strdup(BestFonts[default_font]);
+		}
 		for (i = 0; i < fontnames; i++)
 		{
+			if (FontHdr.NumFacenames == 0) break;
 			fseek(HelpFile, FontStart + FontHdr.FacenamesOffset + len * i, SEEK_SET);
 			my_fread(FontName, len, HelpFile);
 			FontName[len] = '\0';
@@ -4017,8 +4030,17 @@ void FontDump(FILE* HelpFile)
 	/* Go to the FONT file and get the headers */
 	FileStart = ftell(HelpFile);
 	read_FONTHEADER(&FontHdr, HelpFile);
-	n = (FontHdr.DescriptorsOffset - FontHdr.FacenamesOffset) / FontHdr.NumFacenames;
-	fontname = my_malloc(FontHdr.NumFacenames * sizeof(char*));
+	if (FontHdr.NumFacenames)
+	{
+		n = (FontHdr.DescriptorsOffset - FontHdr.FacenamesOffset) / FontHdr.NumFacenames;
+		fontname = my_malloc(FontHdr.NumFacenames * sizeof(char*));
+	}
+	else
+	{
+		n = 0;
+		fontname = my_malloc(sizeof(char*));
+		fontname[0] = my_strdup("MS Sans Serif");
+	}
 	fseek(HelpFile, FileStart + FontHdr.FacenamesOffset, SEEK_SET);
 	for (i = 0; i < FontHdr.NumFacenames; i++)
 	{
