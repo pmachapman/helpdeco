@@ -2051,6 +2051,11 @@ void FontLoad(FILE* HelpFile, FILE* rtf, FILE* hpj)
 	{
 		FontStart = ftell(HelpFile);
 		read_FONTHEADER(&FontHdr, HelpFile);
+		if (FontHdr.DescriptorsOffset < FontHdr.FacenamesOffset)
+		{
+			fprintf(stderr, "malformed FONT file\n");
+			exit(1);
+		}
 		fontnames = FontHdr.NumFacenames;
 		if (fontnames)
 		{
@@ -4030,6 +4035,11 @@ void FontDump(FILE* HelpFile)
 	/* Go to the FONT file and get the headers */
 	FileStart = ftell(HelpFile);
 	read_FONTHEADER(&FontHdr, HelpFile);
+	if (FontHdr.DescriptorsOffset < FontHdr.FacenamesOffset)
+	{
+		fprintf(stderr, "malformed FONT file\n");
+		exit(1);
+	}
 	if (FontHdr.NumFacenames)
 	{
 		n = (FontHdr.DescriptorsOffset - FontHdr.FacenamesOffset) / FontHdr.NumFacenames;
