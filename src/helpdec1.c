@@ -565,7 +565,7 @@ char* PrintString(const char* str, unsigned int len)
 		}
 		str++;
 	}
-	return str;
+	return (char*)str;
 }
 
 /* get next bit (lsb first) from 32 bit words in f, initialized if f = NULL */
