@@ -1343,11 +1343,11 @@ END OF GRAPHICS STUFF
 
 char* getbitmapname(unsigned int n) /* retrieve extension of exported bitmap n */
 {
-	static char name[12];
+	static char name[20];
 
 	if (n < extensions && extension[n])
 	{
-		sprintf(name, "bm%u.%s", n, bmpext[extension[n] & 0x0F]);
+		snprintf(name, sizeof(name), "bm%u.%s", n, bmpext[extension[n] & 0x0F]);
 	}
 	else if (n == 65535U)
 	{
@@ -1359,7 +1359,7 @@ char* getbitmapname(unsigned int n) /* retrieve extension of exported bitmap n *
 	{
 		warnings = TRUE;
 		fprintf(stderr, "Bitmap bm%u not exported\n", n);
-		sprintf(name, "bm%u.bmp", n);
+		snprintf(name, sizeof(name), "bm%u.bmp", n);
 	}
 	return name;
 }
