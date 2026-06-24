@@ -43,6 +43,23 @@ http://www.gnu.org
 #include "compat.h"
 #endif
 
+static inline uint16_t read_u16_le(const void* ptr)
+{
+	const unsigned char* b = (const unsigned char*)ptr;
+
+	return (uint16_t)b[0] | ((uint16_t)b[1] << 8);
+}
+
+static inline uint32_t read_u32_le(const void* ptr)
+{
+	const unsigned char* b = (const unsigned char*)ptr;
+
+	return (uint32_t)b[0]
+		| ((uint32_t)b[1] << 8)
+		| ((uint32_t)b[2] << 16)
+		| ((uint32_t)b[3] << 24);
+}
+
 #ifdef __TURBOC__
 typedef struct { char a, b, c; } align;
 #if sizeof(align)!=3

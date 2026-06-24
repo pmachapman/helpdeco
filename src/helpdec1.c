@@ -616,12 +616,12 @@ int16_t scanint(char** ptr) /* scan a compressed short */
 {
 	int16_t ret;
 	if (*(*ptr) & 1) {
-		ret = (*(((uint16_t*)(*ptr))) >> 1) - 0x4000;
-		*ptr = ((uint16_t*)*ptr) + 1;
+		ret = (int16_t)(read_u16_le(*ptr) >> 1) - 0x4000;
+		*ptr += 2;
 	}
 	else {
-		ret = (*(((unsigned char*)(*ptr))) >> 1) - 0x40;
-		*ptr = ((unsigned char*)*ptr) + 1;
+		ret = (int16_t)(((unsigned char)**ptr) >> 1) - 0x40;
+		*ptr += 1;
 	}
 	return ret;
 }
@@ -630,12 +630,12 @@ uint16_t scanword(char** ptr) /* scan a compressed unsiged short */
 {
 	uint16_t ret;
 	if (*(*ptr) & 1) {
-		ret = (*(((uint16_t*)(*ptr))) >> 1);
-		*ptr = ((uint16_t*)*ptr) + 1;
+		ret = read_u16_le(*ptr) >> 1;
+		*ptr += 2;
 	}
 	else {
-		ret = (*(((unsigned char*)(*ptr))) >> 1);
-		*ptr = ((unsigned char*)*ptr) + 1;
+		ret = ((unsigned char)**ptr) >> 1;
+		*ptr += 1;
 	}
 	return ret;
 }
@@ -644,12 +644,12 @@ uint32_t scanlong(char** ptr)  /* scan a compressed long */
 {
 	uint32_t ret;
 	if (*(*ptr) & 1) {
-		ret = (*(((uint32_t*)(*ptr))) >> 1) - 0x40000000L;
-		*ptr = ((uint32_t*)*ptr) + 1;
+		ret = (read_u32_le(*ptr) >> 1) - 0x40000000UL;
+		*ptr += 4;
 	}
 	else {
-		ret = (*(((uint16_t*)(*ptr))) >> 1) - 0x4000;
-		*ptr = ((uint16_t*)*ptr) + 1;
+		ret = (read_u16_le(*ptr) >> 1) - 0x4000U;
+		*ptr += 2;
 	}
 	return ret;
 }
