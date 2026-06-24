@@ -4466,7 +4466,7 @@ void DumpTopic(FILE* HelpFile, long TopicPos)
 				ptr += 4;
 				x2 = *((uint16_t*)ptr);
 				ptr += 2;
-				if (x2 & 0x0001) printf("unknownbit01=%ld ", scanlong(&ptr)); /* found in MVBs, purpose unknown, may mean that x2 is compressed long */
+				if (x2 & 0x0001) printf("unknownbit01=%u ", (unsigned int)scanlong(&ptr)); /* found in MVBs, purpose unknown, may mean that x2 is compressed long */
 				if (x2 & 0x0002) printf("topspacing=%d ", scanint(&ptr));
 				if (x2 & 0x0004) printf("bottomspacing=%d ", scanint(&ptr));
 				if (x2 & 0x0008) printf("linespacing=%d ", scanint(&ptr));
