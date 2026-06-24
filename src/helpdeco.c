@@ -1868,7 +1868,7 @@ BOOL PhraseLoad(FILE* HelpFile)
 		{
 			if (FileLength != PhrIndexHdr.phrimagecompressedsize)
 			{
-				fprintf(stderr, "PhrImage FileSize %ld, in PhrIndex.FileHdr %ld\n", PhrIndexHdr.phrimagecompressedsize, FileLength);
+				fprintf(stderr, "PhrImage FileSize %d, in PhrIndex.FileHdr %ld\n", PhrIndexHdr.phrimagecompressedsize, FileLength);
 			}
 			PhraseCount = (unsigned int)PhrIndexHdr.entries;
 			PhraseOffsets = my_malloc(sizeof(unsigned int) * (PhraseCount + 1));
@@ -2339,7 +2339,7 @@ void FontLoad(FILE* HelpFile, FILE* rtf, FILE* hpj)
 					if (m->font.expndtw) fprintf(rtf, "\\expndtw%d", m->font.expndtw);
 					if (m->font.up > 0) fprintf(rtf, "\\up%d", m->font.up);
 					else if (m->font.up < 0) fprintf(rtf, "\\dn%d", -m->font.up);
-					fprintf(rtf, "\\fs%ld", -2 * m->font.Height);
+					fprintf(rtf, "\\fs%d", -2 * m->font.Height);
 					if (m->font.FGRGB[0]) fprintf(rtf, "\\cf%d", m->font.FGRGB[0]);
 					if (m->font.BGRGB[0]) fprintf(rtf, "\\cb%d", m->font.BGRGB[0]);
 				}
@@ -2379,7 +2379,7 @@ void FontLoad(FILE* HelpFile, FILE* rtf, FILE* hpj)
 					if (m->font.StrikeOut) fputs("\\strike", rtf);
 					if (m->font.DoubleUnderline) fputs("\\uldb", rtf);
 					if (m->font.SmallCaps) fputs("\\scaps", rtf);
-					fprintf(rtf, "\\fs%ld", -2 * m->font.Height);
+					fprintf(rtf, "\\fs%d", -2 * m->font.Height);
 					if (m->font.FGRGB[0]) fprintf(rtf, "\\cf%d", m->font.FGRGB[0]);
 					if (m->font.BGRGB[0]) fprintf(rtf, "\\cb%d", m->font.BGRGB[0]);
 				}
@@ -2899,7 +2899,7 @@ void LinkBrowse(long TopicOffset, long OtherTopicOffset, long NextTopic, long Pr
 		fprintf(stderr, "Can not link %08lx %08lx %08lx\n", TopicOffset, NextTopic, PrevTopic);
 		for (i = 0; i < browses; i++) if (browse[i].StartTopic != -1L)
 		{
-			fprintf(stderr, "Open browse %08lx %08lx\n", browse[i].PrevTopic, browse[i].NextTopic);
+			fprintf(stderr, "Open browse %08X %08X\n", (unsigned int)browse[i].PrevTopic, (unsigned int)browse[i].NextTopic);
 		}
 	}
 }
@@ -4376,8 +4376,8 @@ void DumpTopic(FILE* HelpFile, long TopicPos)
 	while (TopicRead(HelpFile, TopicPos, &TopicLink, sizeof(TopicLink)) == sizeof(TOPICLINK))
 	{
 		puts("----------------------------------------------------------------------------");
-		printf("TopicLink Type %02x: BlockSize=%08lx DataLen1=%08lx DataLen2=%08lx\n", TopicLink.RecordType, TopicLink.BlockSize, TopicLink.DataLen1, TopicLink.DataLen2);
-		printf("TopicPos=%08lx TopicOffset=%08lx PrevBlock=%08lx NextBlock=%08lx\n", TopicPos, TopicOffset, TopicLink.PrevBlock, TopicLink.NextBlock);
+		printf("TopicLink Type %02x: BlockSize=%08X DataLen1=%08X DataLen2=%08X\n", TopicLink.RecordType, (unsigned int)TopicLink.BlockSize, (unsigned int)TopicLink.DataLen1, (unsigned int)TopicLink.DataLen2);
+		printf("TopicPos=%08lX TopicOffset=%08lX PrevBlock=%08X NextBlock=%08X\n", TopicPos, TopicOffset, (unsigned int)TopicLink.PrevBlock, (unsigned int)TopicLink.NextBlock);
 		if (TopicLink.DataLen1 > sizeof(TOPICLINK))
 		{
 			LinkData1 = my_malloc(TopicLink.DataLen1 - sizeof(TOPICLINK));
@@ -4397,15 +4397,15 @@ void DumpTopic(FILE* HelpFile, long TopicPos)
 			{
 				TopicHdr30 = (TOPICHEADER30*)LinkData1;
 				puts("============================================================================");
-				printf("TopicHeader TopicNum=%ld BlockSize=%ld PrevTopicNum=%d NextTopicNum=%d\n", TopicNum, TopicHdr30->BlockSize, TopicHdr30->PrevTopicNum, TopicHdr30->NextTopicNum);
+				printf("TopicHeader TopicNum=%ld BlockSize=%d PrevTopicNum=%d NextTopicNum=%d\n", TopicNum, TopicHdr30->BlockSize, TopicHdr30->PrevTopicNum, TopicHdr30->NextTopicNum);
 				TopicNum++;
 			}
 			else
 			{
 				TopicHdr = (TOPICHEADER*)LinkData1;
 				puts("============================================================================");
-				printf("TopicHeader TopicNum=%ld BlockSize=%ld NextTopicOffset=%08lx\n", TopicHdr->TopicNum, TopicHdr->BlockSize, TopicHdr->NextTopic);
-				printf("NonScroll=%08lx Scroll=%08lx BrowseBck=%08lx BrowseFor=%08lx\n", TopicHdr->NonScroll, TopicHdr->Scroll, TopicHdr->BrowseBck, TopicHdr->BrowseFor);
+				printf("TopicHeader TopicNum=%d BlockSize=%d NextTopicOffset=%08X\n", TopicHdr->TopicNum, TopicHdr->BlockSize, (unsigned int)TopicHdr->NextTopic);
+				printf("NonScroll=%08X Scroll=%08X BrowseBck=%08X BrowseFor=%08X\n", (unsigned int)TopicHdr->NonScroll, (unsigned int)TopicHdr->Scroll, (unsigned int)TopicHdr->BrowseBck, (unsigned int)TopicHdr->BrowseFor);
 			}
 		}
 		else if (TopicLink.RecordType == TL_DISPLAY30 || TopicLink.RecordType == TL_DISPLAY || TopicLink.RecordType == TL_TABLE)
@@ -4423,7 +4423,7 @@ void DumpTopic(FILE* HelpFile, long TopicPos)
 				break;
 			}
 			ptr = LinkData1;
-			printf("expandedsize=%ld ", scanlong(&ptr));
+			printf("expandedsize=%u ", (unsigned int)scanlong(&ptr));
 			if (TopicLink.RecordType == TL_DISPLAY || TopicLink.RecordType == TL_TABLE)
 			{
 				x1 = scanword(&ptr);
