@@ -341,7 +341,7 @@ BOOL Derive(unsigned char* str, uint32_t desiredhash, char* buffer)
 	unsigned char ch;
 
 	l = 2;
-	s = strlen(str);
+	s = strlen((char*)str);
 	for (i = !win95; i < l; i++) /* three variants what to do with illegal characters */
 	{                /* but only if an illegal character found (see below) */
 		for (j = 0; prefix[j]; j++)
@@ -392,7 +392,7 @@ BOOL Derive(unsigned char* str, uint32_t desiredhash, char* buffer)
 								h %= y;
 								ptr[p++] = ch;
 							}
-							if (h == 0 && (FindString(str, s, ptr, p) || p < 3))
+							if (h == 0 && (FindString(str, s, (unsigned char*)ptr, p) || p < 3))
 							{
 								ptr[p] = '\0';
 								return TRUE;
@@ -444,7 +444,7 @@ void Guess(char* str, TOPICOFFSET topic)
 				}
 				else break;
 			}
-			if (j >= k) if (Derive(str, hash, buffer))
+			if (j >= k) if (Derive((unsigned char*)str, hash, buffer))
 			{
 				if (reportderived) printf("Derived %s\n", buffer);
 				AddTopic(buffer, TRUE);
@@ -1879,7 +1879,7 @@ BOOL PhraseLoad(FILE* HelpFile)
 			}
 			else
 			{
-				DecompressIntoBuffer(2, HelpFile, FileLength, Phrases, PhrIndexHdr.phrimagesize);
+				DecompressIntoBuffer(2, HelpFile, FileLength, (char*)Phrases, PhrIndexHdr.phrimagesize);
 			}
 			fseek(HelpFile, SavePos, SEEK_SET);
 			GetBit(NULL);
@@ -2434,7 +2434,7 @@ long TopicRead(FILE* HelpFile, long TopicPos, void* dest, long NumBytes)
 		n -= sizeof(TOPICBLOCKHEADER);
 		if (lzcompressed)
 		{
-			DecompSize = DecompressIntoBuffer(2, HelpFile, n, TopicBuffer, sizeof(TopicBuffer));
+			DecompSize = DecompressIntoBuffer(2, HelpFile, n, (char*)TopicBuffer, sizeof(TopicBuffer));
 		}
 		else
 		{
@@ -2548,7 +2548,7 @@ long TopicPhraseRead(FILE* HelpFile, long TopicPos, char* dest, long NumBytes, l
 	{
 		buffer = my_malloc(NumBytes);
 		BytesRead = TopicRead(HelpFile, TopicPos, buffer, NumBytes);
-		NumBytes = PhraseReplace(buffer, NumBytes, dest) - dest;
+		NumBytes = PhraseReplace((unsigned char*)buffer, NumBytes, dest) - dest;
 		free(buffer);
 		if (NumBytes > Length)
 		{
@@ -4136,7 +4136,7 @@ void PhrImageDump(FILE* HelpFile)
 					fprintf(stderr, "PhrImage FileSize %d, in PhrIndex.FileHdr %ld\n", PhrIndexHdr.phrimagecompressedsize, FileLength);
 				}
 				ptr = my_malloc(PhrIndexHdr.phrimagesize);
-				bytes = DecompressIntoBuffer(2, HelpFile, FileLength, ptr, PhrIndexHdr.phrimagesize);
+				bytes = DecompressIntoBuffer(2, HelpFile, FileLength, (char*)ptr, PhrIndexHdr.phrimagesize);
 				HexDumpMemory(ptr, bytes);
 				free(ptr);
 			}
@@ -4291,7 +4291,7 @@ void SysDump(FILE* HelpFile)
 			}
 			else
 			{
-				HexDumpMemory(SysRec->Data, SysRec->DataSize);
+				HexDumpMemory((unsigned char*)SysRec->Data, SysRec->DataSize);
 				error("[WINDOW] data size does not match");
 			}
 			break;
@@ -4345,7 +4345,7 @@ void SysDump(FILE* HelpFile)
 			break;
 		default:
 			fprintf(stderr, "Unknown record type: 0x%04X\n", SysRec->RecordType);
-			HexDumpMemory(SysRec->Data, SysRec->DataSize);
+			HexDumpMemory((unsigned char*)SysRec->Data, SysRec->DataSize);
 		}
 	}
 }
@@ -4390,7 +4390,7 @@ void DumpTopic(FILE* HelpFile, long TopicPos)
 			if (TopicPhraseRead(HelpFile, 0L, LinkData2, TopicLink.BlockSize - TopicLink.DataLen1, TopicLink.DataLen2) != TopicLink.BlockSize - TopicLink.DataLen1) break;
 		}
 		else LinkData2 = NULL;
-		if (LinkData1) HexDumpMemory(LinkData1, TopicLink.DataLen1 - sizeof(TOPICLINK));
+		if (LinkData1) HexDumpMemory((unsigned char*)LinkData1, TopicLink.DataLen1 - sizeof(TOPICLINK));
 		if (TopicLink.RecordType == TL_TOPICHDR)
 		{
 			if (before31)
