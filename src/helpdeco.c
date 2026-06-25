@@ -200,8 +200,8 @@ char* unhash(uint32_t hash) /* deliver 3.1 context id that fits hash value */
 		}
 	}
 	/* should never happen */
-	error("Can not find a matching string for hash value %08lx", hash);
-	sprintf(buffer, "HASH%08lx", hash);
+	error("Can not find a matching string for hash value %08X", (unsigned int)hash);
+	sprintf(buffer, "HASH%08X", (unsigned int)hash);
 	return buffer;
 }
 
@@ -341,7 +341,7 @@ BOOL Derive(unsigned char* str, uint32_t desiredhash, char* buffer)
 	unsigned char ch;
 
 	l = 2;
-	s = strlen(str);
+	s = strlen((char*)str);
 	for (i = !win95; i < l; i++) /* three variants what to do with illegal characters */
 	{                /* but only if an illegal character found (see below) */
 		for (j = 0; prefix[j]; j++)
@@ -392,7 +392,7 @@ BOOL Derive(unsigned char* str, uint32_t desiredhash, char* buffer)
 								h %= y;
 								ptr[p++] = ch;
 							}
-							if (h == 0 && (FindString(str, s, ptr, p) || p < 3))
+							if (h == 0 && (FindString(str, s, (unsigned char*)ptr, p) || p < 3))
 							{
 								ptr[p] = '\0';
 								return TRUE;
@@ -444,7 +444,7 @@ void Guess(char* str, TOPICOFFSET topic)
 				}
 				else break;
 			}
-			if (j >= k) if (Derive(str, hash, buffer))
+			if (j >= k) if (Derive((unsigned char*)str, hash, buffer))
 			{
 				if (reportderived) printf("Derived %s\n", buffer);
 				AddTopic(buffer, TRUE);
@@ -744,7 +744,7 @@ void CheckReferences(void)
 						}
 						else
 						{
-							printf("0x%08lx@%s not found\n", ptr->hash, ref->filename);
+							printf("0x%08X@%s not found\n", (unsigned int)ptr->hash, ref->filename);
 						}
 						while (ptr->here)
 						{
@@ -785,7 +785,7 @@ void ListReferences(void)
 				}
 				else
 				{
-					printf("0x%08lx='%s'", ptr->hash, unhash(ptr->hash));
+					printf("0x%08X='%s'", (unsigned int)ptr->hash, unhash(ptr->hash));
 				}
 				break;
 			case CONTEXT:
@@ -796,7 +796,7 @@ void ListReferences(void)
 				}
 				else
 				{
-					printf("0x%08lx=(%ld)", ptr->hash, ptr->hash);
+					printf("0x%08X=(%d)", (unsigned int)ptr->hash, ptr->hash);
 				}
 				break;
 			}
@@ -1287,7 +1287,8 @@ int ExtractBitmap(char* szFilename, MFILE* f)
 					case 0xE7: /* topic jump without font change */
 						if (hash(buffer + j) != hotspot[n].hash)
 						{
-							fprintf(stderr, "Wrong hash %08lx instead %08lx for '%s'\n", hotspot[n].hash, hash(buffer + j), buffer + j);
+							fprintf(stderr, "Wrong hash %08X instead %08X for '%s'\n",
+								(unsigned int)hotspot[n].hash, (unsigned int)hash(buffer + j), buffer + j);
 						}
 						AddTopic(buffer + j, FALSE);
 						break;
@@ -1342,11 +1343,11 @@ END OF GRAPHICS STUFF
 
 char* getbitmapname(unsigned int n) /* retrieve extension of exported bitmap n */
 {
-	static char name[12];
+	static char name[20];
 
 	if (n < extensions && extension[n])
 	{
-		sprintf(name, "bm%u.%s", n, bmpext[extension[n] & 0x0F]);
+		snprintf(name, sizeof(name), "bm%u.%s", n, bmpext[extension[n] & 0x0F]);
 	}
 	else if (n == 65535U)
 	{
@@ -1358,7 +1359,7 @@ char* getbitmapname(unsigned int n) /* retrieve extension of exported bitmap n *
 	{
 		warnings = TRUE;
 		fprintf(stderr, "Bitmap bm%u not exported\n", n);
-		sprintf(name, "bm%u.bmp", n);
+		snprintf(name, sizeof(name), "bm%u.bmp", n);
 	}
 	return name;
 }
@@ -1448,7 +1449,7 @@ char* TopicName(int32_t topic)
 			return unhash(ContextRec[i].HashValue);
 		}
 	}
-	if (topic) fprintf(stderr, "Can not find topic offset %08lx\n", topic);
+	if (topic) fprintf(stderr, "Can not find topic offset %08X\n", (unsigned int)topic);
 	return NULL;
 }
 
@@ -1867,7 +1868,7 @@ BOOL PhraseLoad(FILE* HelpFile)
 		{
 			if (FileLength != PhrIndexHdr.phrimagecompressedsize)
 			{
-				fprintf(stderr, "PhrImage FileSize %ld, in PhrIndex.FileHdr %ld\n", PhrIndexHdr.phrimagecompressedsize, FileLength);
+				fprintf(stderr, "PhrImage FileSize %d, in PhrIndex.FileHdr %ld\n", PhrIndexHdr.phrimagecompressedsize, FileLength);
 			}
 			PhraseCount = (unsigned int)PhrIndexHdr.entries;
 			PhraseOffsets = my_malloc(sizeof(unsigned int) * (PhraseCount + 1));
@@ -1878,7 +1879,7 @@ BOOL PhraseLoad(FILE* HelpFile)
 			}
 			else
 			{
-				DecompressIntoBuffer(2, HelpFile, FileLength, Phrases, PhrIndexHdr.phrimagesize);
+				DecompressIntoBuffer(2, HelpFile, FileLength, (char*)Phrases, PhrIndexHdr.phrimagesize);
 			}
 			fseek(HelpFile, SavePos, SEEK_SET);
 			GetBit(NULL);
@@ -2338,7 +2339,7 @@ void FontLoad(FILE* HelpFile, FILE* rtf, FILE* hpj)
 					if (m->font.expndtw) fprintf(rtf, "\\expndtw%d", m->font.expndtw);
 					if (m->font.up > 0) fprintf(rtf, "\\up%d", m->font.up);
 					else if (m->font.up < 0) fprintf(rtf, "\\dn%d", -m->font.up);
-					fprintf(rtf, "\\fs%ld", -2 * m->font.Height);
+					fprintf(rtf, "\\fs%d", -2 * m->font.Height);
 					if (m->font.FGRGB[0]) fprintf(rtf, "\\cf%d", m->font.FGRGB[0]);
 					if (m->font.BGRGB[0]) fprintf(rtf, "\\cb%d", m->font.BGRGB[0]);
 				}
@@ -2378,7 +2379,7 @@ void FontLoad(FILE* HelpFile, FILE* rtf, FILE* hpj)
 					if (m->font.StrikeOut) fputs("\\strike", rtf);
 					if (m->font.DoubleUnderline) fputs("\\uldb", rtf);
 					if (m->font.SmallCaps) fputs("\\scaps", rtf);
-					fprintf(rtf, "\\fs%ld", -2 * m->font.Height);
+					fprintf(rtf, "\\fs%d", -2 * m->font.Height);
 					if (m->font.FGRGB[0]) fprintf(rtf, "\\cf%d", m->font.FGRGB[0]);
 					if (m->font.BGRGB[0]) fprintf(rtf, "\\cb%d", m->font.BGRGB[0]);
 				}
@@ -2433,7 +2434,7 @@ long TopicRead(FILE* HelpFile, long TopicPos, void* dest, long NumBytes)
 		n -= sizeof(TOPICBLOCKHEADER);
 		if (lzcompressed)
 		{
-			DecompSize = DecompressIntoBuffer(2, HelpFile, n, TopicBuffer, sizeof(TopicBuffer));
+			DecompSize = DecompressIntoBuffer(2, HelpFile, n, (char*)TopicBuffer, sizeof(TopicBuffer));
 		}
 		else
 		{
@@ -2547,7 +2548,7 @@ long TopicPhraseRead(FILE* HelpFile, long TopicPos, char* dest, long NumBytes, l
 	{
 		buffer = my_malloc(NumBytes);
 		BytesRead = TopicRead(HelpFile, TopicPos, buffer, NumBytes);
-		NumBytes = PhraseReplace(buffer, NumBytes, dest) - dest;
+		NumBytes = PhraseReplace((unsigned char*)buffer, NumBytes, dest) - dest;
 		free(buffer);
 		if (NumBytes > Length)
 		{
@@ -2898,7 +2899,7 @@ void LinkBrowse(long TopicOffset, long OtherTopicOffset, long NextTopic, long Pr
 		fprintf(stderr, "Can not link %08lx %08lx %08lx\n", TopicOffset, NextTopic, PrevTopic);
 		for (i = 0; i < browses; i++) if (browse[i].StartTopic != -1L)
 		{
-			fprintf(stderr, "Open browse %08lx %08lx\n", browse[i].PrevTopic, browse[i].NextTopic);
+			fprintf(stderr, "Open browse %08X %08X\n", (unsigned int)browse[i].PrevTopic, (unsigned int)browse[i].NextTopic);
 		}
 	}
 }
@@ -3999,7 +4000,7 @@ void ListRose(FILE* HelpFile, FILE* hpj)
 // of the help file with known format of contents for debugging reasons */
 void PrintNewFont(int i, NEWFONT* newfont)
 {
-	printf("%3d: %-32.32s %6ld %-6s %02X%02X%02X %02X%02X%02X ", i, fontname[newfont->FontName], newfont->Height, FontFamily(newfont->PitchAndFamily >> 4), newfont->FGRGB[2], newfont->FGRGB[1], newfont->FGRGB[0], newfont->BGRGB[2], newfont->BGRGB[1], newfont->BGRGB[0]);
+	printf("%3d: %-32.32s %6d %-6s %02X%02X%02X %02X%02X%02X ", i, fontname[newfont->FontName], newfont->Height, FontFamily(newfont->PitchAndFamily >> 4), newfont->FGRGB[2], newfont->FGRGB[1], newfont->FGRGB[0], newfont->BGRGB[2], newfont->BGRGB[1], newfont->BGRGB[0]);
 	if (newfont->Weight > 500) putchar('b');
 	if (newfont->Italic) putchar('i');
 	if (newfont->Underline) putchar('u');
@@ -4011,7 +4012,7 @@ void PrintNewFont(int i, NEWFONT* newfont)
 
 void PrintMvbFont(int i, MVBFONT* mvbfont)
 {
-	printf("%3d: %-32.32s %6ld %-6s %02X%02X%02X %02X%02X%02X ", i, fontname[mvbfont->FontName], mvbfont->Height, FontFamily(mvbfont->PitchAndFamily >> 4), mvbfont->FGRGB[2], mvbfont->FGRGB[1], mvbfont->FGRGB[0], mvbfont->BGRGB[2], mvbfont->BGRGB[1], mvbfont->BGRGB[0]);
+	printf("%3d: %-32.32s %6d %-6s %02X%02X%02X %02X%02X%02X ", i, fontname[mvbfont->FontName], mvbfont->Height, FontFamily(mvbfont->PitchAndFamily >> 4), mvbfont->FGRGB[2], mvbfont->FGRGB[1], mvbfont->FGRGB[0], mvbfont->BGRGB[2], mvbfont->BGRGB[1], mvbfont->BGRGB[0]);
 	if (mvbfont->Weight > 500) putchar('b');
 	if (mvbfont->Italic) putchar('i');
 	if (mvbfont->Underline) putchar('u');
@@ -4132,10 +4133,10 @@ void PhrImageDump(FILE* HelpFile)
 			{
 				if (FileLength != PhrIndexHdr.phrimagecompressedsize)
 				{
-					fprintf(stderr, "PhrImage FileSize %ld, in PhrIndex.FileHdr %ld\n", PhrIndexHdr.phrimagecompressedsize, FileLength);
+					fprintf(stderr, "PhrImage FileSize %d, in PhrIndex.FileHdr %ld\n", PhrIndexHdr.phrimagecompressedsize, FileLength);
 				}
 				ptr = my_malloc(PhrIndexHdr.phrimagesize);
-				bytes = DecompressIntoBuffer(2, HelpFile, FileLength, ptr, PhrIndexHdr.phrimagesize);
+				bytes = DecompressIntoBuffer(2, HelpFile, FileLength, (char*)ptr, PhrIndexHdr.phrimagesize);
 				HexDumpMemory(ptr, bytes);
 				free(ptr);
 			}
@@ -4168,8 +4169,8 @@ void BTreeDump(FILE* HelpFile, char text[])
 						count = getdw(HelpFile);
 						while (count >= 8)
 						{
-							printf(" (%ld)", getdw(HelpFile));
-							printf("%08lx", getdw(HelpFile));
+							printf(" (%u)", (unsigned int)getdw(HelpFile));
+							printf("%08X", (unsigned int)getdw(HelpFile));
 							count -= 8;
 						}
 					}
@@ -4290,7 +4291,7 @@ void SysDump(FILE* HelpFile)
 			}
 			else
 			{
-				HexDumpMemory(SysRec->Data, SysRec->DataSize);
+				HexDumpMemory((unsigned char*)SysRec->Data, SysRec->DataSize);
 				error("[WINDOW] data size does not match");
 			}
 			break;
@@ -4344,7 +4345,7 @@ void SysDump(FILE* HelpFile)
 			break;
 		default:
 			fprintf(stderr, "Unknown record type: 0x%04X\n", SysRec->RecordType);
-			HexDumpMemory(SysRec->Data, SysRec->DataSize);
+			HexDumpMemory((unsigned char*)SysRec->Data, SysRec->DataSize);
 		}
 	}
 }
@@ -4375,8 +4376,8 @@ void DumpTopic(FILE* HelpFile, long TopicPos)
 	while (TopicRead(HelpFile, TopicPos, &TopicLink, sizeof(TopicLink)) == sizeof(TOPICLINK))
 	{
 		puts("----------------------------------------------------------------------------");
-		printf("TopicLink Type %02x: BlockSize=%08lx DataLen1=%08lx DataLen2=%08lx\n", TopicLink.RecordType, TopicLink.BlockSize, TopicLink.DataLen1, TopicLink.DataLen2);
-		printf("TopicPos=%08lx TopicOffset=%08lx PrevBlock=%08lx NextBlock=%08lx\n", TopicPos, TopicOffset, TopicLink.PrevBlock, TopicLink.NextBlock);
+		printf("TopicLink Type %02x: BlockSize=%08X DataLen1=%08X DataLen2=%08X\n", TopicLink.RecordType, (unsigned int)TopicLink.BlockSize, (unsigned int)TopicLink.DataLen1, (unsigned int)TopicLink.DataLen2);
+		printf("TopicPos=%08lX TopicOffset=%08lX PrevBlock=%08X NextBlock=%08X\n", TopicPos, TopicOffset, (unsigned int)TopicLink.PrevBlock, (unsigned int)TopicLink.NextBlock);
 		if (TopicLink.DataLen1 > sizeof(TOPICLINK))
 		{
 			LinkData1 = my_malloc(TopicLink.DataLen1 - sizeof(TOPICLINK));
@@ -4389,22 +4390,22 @@ void DumpTopic(FILE* HelpFile, long TopicPos)
 			if (TopicPhraseRead(HelpFile, 0L, LinkData2, TopicLink.BlockSize - TopicLink.DataLen1, TopicLink.DataLen2) != TopicLink.BlockSize - TopicLink.DataLen1) break;
 		}
 		else LinkData2 = NULL;
-		if (LinkData1) HexDumpMemory(LinkData1, TopicLink.DataLen1 - sizeof(TOPICLINK));
+		if (LinkData1) HexDumpMemory((unsigned char*)LinkData1, TopicLink.DataLen1 - sizeof(TOPICLINK));
 		if (TopicLink.RecordType == TL_TOPICHDR)
 		{
 			if (before31)
 			{
 				TopicHdr30 = (TOPICHEADER30*)LinkData1;
 				puts("============================================================================");
-				printf("TopicHeader TopicNum=%ld BlockSize=%ld PrevTopicNum=%d NextTopicNum=%d\n", TopicNum, TopicHdr30->BlockSize, TopicHdr30->PrevTopicNum, TopicHdr30->NextTopicNum);
+				printf("TopicHeader TopicNum=%ld BlockSize=%d PrevTopicNum=%d NextTopicNum=%d\n", TopicNum, TopicHdr30->BlockSize, TopicHdr30->PrevTopicNum, TopicHdr30->NextTopicNum);
 				TopicNum++;
 			}
 			else
 			{
 				TopicHdr = (TOPICHEADER*)LinkData1;
 				puts("============================================================================");
-				printf("TopicHeader TopicNum=%ld BlockSize=%ld NextTopicOffset=%08lx\n", TopicHdr->TopicNum, TopicHdr->BlockSize, TopicHdr->NextTopic);
-				printf("NonScroll=%08lx Scroll=%08lx BrowseBck=%08lx BrowseFor=%08lx\n", TopicHdr->NonScroll, TopicHdr->Scroll, TopicHdr->BrowseBck, TopicHdr->BrowseFor);
+				printf("TopicHeader TopicNum=%d BlockSize=%d NextTopicOffset=%08X\n", TopicHdr->TopicNum, TopicHdr->BlockSize, (unsigned int)TopicHdr->NextTopic);
+				printf("NonScroll=%08X Scroll=%08X BrowseBck=%08X BrowseFor=%08X\n", (unsigned int)TopicHdr->NonScroll, (unsigned int)TopicHdr->Scroll, (unsigned int)TopicHdr->BrowseBck, (unsigned int)TopicHdr->BrowseFor);
 			}
 		}
 		else if (TopicLink.RecordType == TL_DISPLAY30 || TopicLink.RecordType == TL_DISPLAY || TopicLink.RecordType == TL_TABLE)
@@ -4422,7 +4423,7 @@ void DumpTopic(FILE* HelpFile, long TopicPos)
 				break;
 			}
 			ptr = LinkData1;
-			printf("expandedsize=%ld ", scanlong(&ptr));
+			printf("expandedsize=%u ", (unsigned int)scanlong(&ptr));
 			if (TopicLink.RecordType == TL_DISPLAY || TopicLink.RecordType == TL_TABLE)
 			{
 				x1 = scanword(&ptr);
@@ -4464,8 +4465,8 @@ void DumpTopic(FILE* HelpFile, long TopicPos)
 				printf("%02x %d id=%04x ", *(unsigned char*)ptr, *(unsigned char*)(ptr + 1) - 0x80, *(uint16_t*)(ptr + 2));
 				ptr += 4;
 				x2 = *((uint16_t*)ptr);
-				ptr = ((uint16_t*)ptr) + 1;
-				if (x2 & 0x0001) printf("unknownbit01=%ld ", scanlong(&ptr)); /* found in MVBs, purpose unknown, may mean that x2 is compressed long */
+				ptr += 2;
+				if (x2 & 0x0001) printf("unknownbit01=%u ", (unsigned int)scanlong(&ptr)); /* found in MVBs, purpose unknown, may mean that x2 is compressed long */
 				if (x2 & 0x0002) printf("topspacing=%d ", scanint(&ptr));
 				if (x2 & 0x0004) printf("bottomspacing=%d ", scanint(&ptr));
 				if (x2 & 0x0008) printf("linespacing=%d ", scanint(&ptr));
@@ -4485,7 +4486,7 @@ void DumpTopic(FILE* HelpFile, long TopicPos)
 					if (x1 & 0x40) fputs("doubleborder ", stdout);
 					if (x1 & 0x80) fputs("unknownborder", stdout);
 					printf("%04x ", *((uint16_t*)ptr));
-					ptr = (uint16_t*)ptr + 1;
+					ptr += 2;
 				}
 				if (x2 & 0x0200)
 				{
@@ -4748,11 +4749,11 @@ void CTXOMAPList(FILE* HelpFile, FILE* hpj) /* write [MAP] section to HPJ file *
 				ptr = TopicName(CTXORec.TopicOffset);
 				if (ptr)
 				{
-					fprintf(hpj, "%s %ld\n", ptr, CTXORec.MapID);
+					fprintf(hpj, "%s %d\n", ptr, CTXORec.MapID);
 				}
 				else
 				{
-					fprintf(hpj, "TOPIC%08lx %ld\n", CTXORec.TopicOffset, CTXORec.MapID);
+					fprintf(hpj, "TOPIC%08X %d\n", (unsigned int)CTXORec.TopicOffset, CTXORec.MapID);
 				}
 			}
 			putc('\n', hpj);
@@ -5215,7 +5216,7 @@ void ContextList(FILE* HelpFile)
 			if (before31) TopicOffset = TopicPos;
 			while (m < maprecs && map[m].TopicOffset < TopicOffset)
 			{
-				printf("  WinHelp(wnd,\"%s\",HELP_CONTEXT,%lu)\n", filename, map[m].MapID);
+				printf("  WinHelp(wnd,\"%s\",HELP_CONTEXT,%u)\n", filename, (unsigned int)map[m].MapID);
 				m++;
 			}
 			if (!before31)
@@ -5851,7 +5852,7 @@ int main(int argc, char* argv[])
 			"work like the original.\n"
 #ifndef _WIN32
 #endif
-			, sizeof(int) * 8);
+			, (int)(sizeof(int) * 8));
 	}
 	return 0;
 }

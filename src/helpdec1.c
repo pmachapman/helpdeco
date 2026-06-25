@@ -565,7 +565,7 @@ char* PrintString(const char* str, unsigned int len)
 		}
 		str++;
 	}
-	return str;
+	return (char*)str;
 }
 
 /* get next bit (lsb first) from 32 bit words in f, initialized if f = NULL */
@@ -616,12 +616,12 @@ int16_t scanint(char** ptr) /* scan a compressed short */
 {
 	int16_t ret;
 	if (*(*ptr) & 1) {
-		ret = (*(((uint16_t*)(*ptr))) >> 1) - 0x4000;
-		*ptr = ((uint16_t*)*ptr) + 1;
+		ret = (int16_t)(read_u16_le(*ptr) >> 1) - 0x4000;
+		*ptr += 2;
 	}
 	else {
-		ret = (*(((unsigned char*)(*ptr))) >> 1) - 0x40;
-		*ptr = ((unsigned char*)*ptr) + 1;
+		ret = (int16_t)(((unsigned char)**ptr) >> 1) - 0x40;
+		*ptr += 1;
 	}
 	return ret;
 }
@@ -630,12 +630,12 @@ uint16_t scanword(char** ptr) /* scan a compressed unsiged short */
 {
 	uint16_t ret;
 	if (*(*ptr) & 1) {
-		ret = (*(((uint16_t*)(*ptr))) >> 1);
-		*ptr = ((uint16_t*)*ptr) + 1;
+		ret = read_u16_le(*ptr) >> 1;
+		*ptr += 2;
 	}
 	else {
-		ret = (*(((unsigned char*)(*ptr))) >> 1);
-		*ptr = ((unsigned char*)*ptr) + 1;
+		ret = ((unsigned char)**ptr) >> 1;
+		*ptr += 1;
 	}
 	return ret;
 }
@@ -644,12 +644,12 @@ uint32_t scanlong(char** ptr)  /* scan a compressed long */
 {
 	uint32_t ret;
 	if (*(*ptr) & 1) {
-		ret = (*(((uint32_t*)(*ptr))) >> 1) - 0x40000000L;
-		*ptr = ((uint32_t*)*ptr) + 1;
+		ret = (read_u32_le(*ptr) >> 1) - 0x40000000UL;
+		*ptr += 4;
 	}
 	else {
-		ret = (*(((uint16_t*)(*ptr))) >> 1) - 0x4000;
-		*ptr = ((uint16_t*)*ptr) + 1;
+		ret = (read_u16_le(*ptr) >> 1) - 0x4000U;
+		*ptr += 2;
 	}
 	return ret;
 }
@@ -804,7 +804,7 @@ void ListFiles(FILE* HelpFile) /* display internal directory */
 		for (i = 0; i < n; i++)
 		{
 			my_gets(FileName, sizeof(FileName), HelpFile);
-			printf("%-23s 0x%08lX", FileName, getdw(HelpFile));
+			printf("%-23s 0x%08X", FileName, (unsigned int)getdw(HelpFile));
 			if (j++ & 1) putchar('\n'); else printf(" | ");
 		}
 	}
@@ -962,7 +962,7 @@ void ToMapDump(FILE* HelpFile, long FileLength)
 
 	for (i = 0; i * 4L < FileLength; i++)
 	{
-		printf("TopicNum: %-12ld TopicOffset: 0x%08lX\n", i, getdw(HelpFile));
+		printf("TopicNum: %-12ld TopicOffset: 0x%08X\n", i, (unsigned int)getdw(HelpFile));
 	}
 }
 
@@ -985,7 +985,7 @@ void GroupDump(FILE* HelpFile)
 		}
 		break;
 	default:
-		fprintf(stderr, "GroupHeader GroupType %ld unknown\n", GroupHeader.GroupType);
+		fprintf(stderr, "GroupHeader GroupType %u unknown\n", (unsigned int)GroupHeader.GroupType);
 	}
 }
 
@@ -998,7 +998,7 @@ void KWMapDump(FILE* HelpFile)
 	for (i = 0; i < n; i++)
 	{
 		read_KWMAPREC(&KeywordMap, HelpFile);
-		printf("Keyword: %-12ld LeafPage: %u\n", KeywordMap.FirstRec, KeywordMap.PageNum);
+		printf("Keyword: %-12d LeafPage: %u\n", KeywordMap.FirstRec, KeywordMap.PageNum);
 	}
 }
 
@@ -1008,7 +1008,7 @@ void KWDataDump(FILE* HelpFile, long FileLength)
 
 	for (i = 0; i < FileLength; i += 4)
 	{
-		printf("KWDataAddress: 0x%08lx TopicOffset: 0x%08lX\n", i, getdw(HelpFile));
+		printf("KWDataAddress: 0x%08lx TopicOffset: 0x%08X\n", i, (unsigned int)getdw(HelpFile));
 	}
 }
 
@@ -1020,7 +1020,7 @@ void CatalogDump(FILE* HelpFile)
 	read_CATALOGHEADER(&catalog, HelpFile);
 	for (n = 0; n < catalog.entries; n++)
 	{
-		printf("Topic: %-12ld TopicOffset: 0x%08lx\n", n + 1, getdw(HelpFile));
+		printf("Topic: %-12ld TopicOffset: 0x%08X\n", n + 1, (unsigned int)getdw(HelpFile));
 	}
 }
 
@@ -1033,7 +1033,7 @@ void CTXOMAPDump(FILE* HelpFile)
 	for (i = 0; i < n; i++)
 	{
 		read_CTXOMAPREC(&CTXORec, HelpFile);
-		printf("MapId: %-12ld TopicOffset: 0x%08lX\n", CTXORec.MapID, CTXORec.TopicOffset);
+		printf("MapId: %-12d TopicOffset: 0x%08X\n", CTXORec.MapID, (unsigned int)CTXORec.TopicOffset);
 	}
 }
 
