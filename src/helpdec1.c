@@ -796,7 +796,7 @@ void ListFiles(FILE* HelpFile) /* display internal directory */
 	char FileName[20];
 	int j, i, n;
 
-	puts("FileName		  FileOffset | FileName 	       FileOffset");
+	printf("%-23s %-10s | %-23s %-10s\n", "FileName", "FileOffset", "FileName", "FileOffset");
 	puts("-----------------------------------+-----------------------------------");
 	j = 0;
 	for (n = GetFirstPage(HelpFile, &buf, NULL); n; n = GetNextPage(HelpFile, &buf))
