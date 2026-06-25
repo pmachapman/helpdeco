@@ -43,14 +43,23 @@ http://www.gnu.org
 #include "compat.h"
 #endif
 
+#ifdef __BORLANDC__
+static uint16_t read_u16_le(const void* ptr)
+#else
 static inline uint16_t read_u16_le(const void* ptr)
+#endif
 {
 	const unsigned char* b = (const unsigned char*)ptr;
 
 	return (uint16_t)b[0] | ((uint16_t)b[1] << 8);
 }
 
+
+#ifdef __BORLANDC__
+static uint32_t read_u32_le(const void* ptr)
+#else
 static inline uint32_t read_u32_le(const void* ptr)
+#endif
 {
 	const unsigned char* b = (const unsigned char*)ptr;
 
